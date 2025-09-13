@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Facility, FacilityUpdate } from "@/app/facilitys/models";
 import http from "@/utils/http";
 import {  FacilityClient } from "../models";
 
