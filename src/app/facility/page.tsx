@@ -26,7 +26,7 @@ export default function FacilityPage() {
   const [editData, setEditData] = useState<Facility | null>(null);
   const [deleteId, setDeleteId] = useState<{ _id: string } | null>(null);
   const [showDescModal, setShowDescModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<ItemsModel | null>(null);
+  const [selectedItem, setSelectedItem] = useState< any | null>(null);
     
 
   const GotoNavigate = ItemNavigate()
