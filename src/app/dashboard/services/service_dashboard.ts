@@ -1,5 +1,4 @@
 
-import { Facility } from "@/app/facilitys/models";
 import http from "@/utils/http";
 import { Dashboard } from "../models";
 
