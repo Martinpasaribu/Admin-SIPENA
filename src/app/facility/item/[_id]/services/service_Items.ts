@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import http from "@/utils/http";
-import { ItemsModel, ItemsModelFromClient, ItemsModelFromServer } from "../models";
+import { ItemsModel, ItemsModelFromClient, ItemsMappingAdd } from "../models";
 
 
-export async function AddItems(facility_key:string,data: ItemsModelFromServer) {
+export async function AddItems(facility_key:string,data: ItemsMappingAdd) {
 
   try {
 
