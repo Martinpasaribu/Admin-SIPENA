@@ -2,8 +2,11 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
+
+
 const api = axios.create({
-  baseURL: 'http://localhost:5000', // Ganti sesuai base URL backend kamu
+  // baseURL: 'http://localhost:5000', // Ganti sesuai base URL backend kamu
+  baseURL: 'https://server-sipena.vercel.app', // Ganti sesuai base URL backend kamu
   withCredentials: true, // Agar cookie HttpOnly ikut dikirim
 });
 
