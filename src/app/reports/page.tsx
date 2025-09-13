@@ -188,7 +188,7 @@ export default function ReportsPage() {
 
   return (
 
-   <main className="p-8 bg-gray-50 text-gray-800 min-h-screen">
+   <div className="p-8 bg-gray-50 text-gray-800 min-h-screen">
       <h1 className="text-3xl font-bold mb-8 text-gray-900">Manajemen Laporan</h1>
 
       <div className="bg-white p-4 rounded-lg shadow mb-6 flex flex-wrap gap-4 justify-between">
@@ -367,6 +367,6 @@ export default function ReportsPage() {
         onCancel={() => setDeleteId(null)}
         message="Yakin ingin menghapus report ini?"
       />
-    </main>
+    </div>
   );
 }
