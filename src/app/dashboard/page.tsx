@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/dashboard/page.tsx
+
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { User, Settings, LogOut } from "lucide-react";
 import { getDashboardInfo } from "./services/service_dashboard";
 import { Dashboard } from "./models";
@@ -19,8 +20,9 @@ import DashboardDivisionItemsPie from "./components/DashboardDivisionItemsPie";
 import { useToast } from "@/components/ToastContect";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/auth";
-import { Employee } from "../employee/models";
 
+import { AnimatePresence, motion } from 'framer-motion';
+import DashboardSummaryMini from "./components/DashboardSummaryMini";
 
 export default function DashboardPage() {
   const [userName] = useState("Admin");
@@ -29,6 +31,9 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<any>();
   
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const [isFloating, setIsFloating] = useState(false);
+
   const { showToast } = useToast();
   const router = useRouter();
   
@@ -65,10 +70,29 @@ export default function DashboardPage() {
     }, [router, showToast]);
   
 
-      useEffect(() => {
+    useEffect(() => {
         fetchData();
       }, [fetchData]);
       
+          useEffect(() => {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            // Kalau bar hilang dari layar → tampilkan floating
+            setIsFloating(!entry.isIntersecting);
+          });
+        },
+        { threshold: 0.1 } // bar dianggap hilang kalau 90% sudah tidak kelihatan
+      );
+
+      if (barRef.current) observer.observe(barRef.current);
+
+      return () => {
+        if (barRef.current) observer.unobserve(barRef.current);
+      };
+    }, []);
+
+
 
 
   return (
@@ -102,7 +126,30 @@ export default function DashboardPage() {
       </section>
 
       {/* Ringkasan */}
-      <DashboardSummary dashboard={dashboard} />
+      <div ref={barRef} >
+
+        <DashboardSummary dashboard={dashboard} />
+
+      </div>
+
+           <AnimatePresence>
+
+              {isFloating && (
+                <motion.div
+                  key="floating-bar"  
+                  initial={{ y: -80, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -80, opacity: 0 }}
+                  transition={{ duration: 0.4, ease: "easeInOut" }}
+                  className="fixed bottom-[1rem] w-full left-0 right-0 z-40  text-white flex justify-center items-center "
+                >
+                  <DashboardSummaryMini dashboard={dashboard} />
+                
+                </motion.div>
+              )}
+
+            </AnimatePresence>
+  
 
       {/* Modul Grafik (semua chart berada di dalam komponen mereka sendiri) */}
       <section className="mt-8 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
