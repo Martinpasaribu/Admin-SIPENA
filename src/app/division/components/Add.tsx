@@ -33,13 +33,13 @@ export default function AddDivisionModal({ show, onClose, onSuccess }: Props) {
       showToast("error", "Nama, Desc dan Kode harus diisi");
       return;
     }
-    if (!/^([AD])\d{1,2}$/i.test(form.code.trim())) {
-      showToast(
-        "warning",
-        "Kode harus diawali D atau A dan diikuti angka, contoh: A01, D12"
-      );
-      return;
-    }
+    // if (!/^([AD])\d{1,2}$/i.test(form.code.trim())) {
+    //   showToast(
+    //     "warning",
+    //     "Kode harus diawali D atau A dan diikuti angka, contoh: A01, D12"
+    //   );
+    //   return;
+    // }
 
     setLoading(true);
     try {

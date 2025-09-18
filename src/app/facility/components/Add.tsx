@@ -104,7 +104,7 @@ export default function AddFacilityModal({ show, onClose, onSuccess }: Props) {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 text-gray-700 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
 
       <form
         onSubmit={handleSubmit}

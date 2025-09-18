@@ -51,7 +51,7 @@ export interface ReportFilterMapping {
   _id: string | null | undefined;
   report_code: string;
   employee_key?:  Customer; // bisa ObjectId (string) atau populated Customer
-  division_key?:  string; // bisa ObjectId (string) atau populated Customer
+  division_key?:  Division; // bisa ObjectId (string) atau populated Customer
   report_type:  "BK" | "M" | "BL" | "K";
   broken_type:  "R" | "S" | "B";
   progress: "A" | "P" | "S" | "T" | "RU";

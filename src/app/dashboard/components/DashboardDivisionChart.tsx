@@ -89,7 +89,12 @@ export default function DashboardDivisionChart({ division }: DivisionProps) {
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" /> {/* ✅ pakai name, bukan code */}
-          <YAxis />
+          <YAxis
+            allowDecimals={false}
+            domain={[0, 'dataMax + 1']}
+            tickCount={6}
+          />
+
           <Tooltip content={<CustomTooltip />} />
           <Legend />
           <Bar dataKey="qty" name="Laporan" fill="#60A5FA" />

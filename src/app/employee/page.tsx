@@ -128,7 +128,7 @@ export default function EmployeePage() {
                       
 
                         <p key={index}>
-                            {item._id?.code}
+                            {item?.code}
                         </p>
 
                     ))}
