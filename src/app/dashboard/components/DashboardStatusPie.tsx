@@ -23,7 +23,7 @@ const STATUS_COLORS: { [key: string]: string } = {
   "Dalam Proses": "#F59E0B",
   "Selesai": "#10B981",
   "Antrian": "#999999FF",
-  "Di Tolak": "#F64B3B",
+  "Ditolak": "#F64B3B",
   "Review Ulang": "#3B82F6"
 };
 
