@@ -12,6 +12,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const [form, setForm] = useState({
     user_id: "",
+    username: "",
     email: "",
     password: "",
     role: "",
@@ -66,6 +67,22 @@ export default function RegisterPage() {
             className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-2 focus:ring-green-400 focus:outline-none"
           />
         </div>
+        
+        <div className="mb-4">
+          <label className="block text-gray-700 font-medium mb-2">
+            Username
+          </label>
+          <input
+            type="text"
+            placeholder="Masukkan username"
+            value={form.username}
+            onChange={(e) =>
+              setForm({ ...form, username: e.target.value })
+            }
+            className="w-full px-4 py-2 border rounded-lg text-gray-700 focus:ring-2 focus:ring-indigo-400 focus:outline-none"
+          />
+        </div>
+
 
         {/* Email */}
         <div className="mb-4">
