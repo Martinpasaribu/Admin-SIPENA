@@ -40,21 +40,21 @@ export default function Home() {
           href="/login"
           className="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition"
         >
-          Login
+          Masuk
         </Link>
-        <Link
+        {/* <Link
           href="/register"
           className="px-6 py-3 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 font-semibold rounded-lg transition"
         >
           Daftar
-        </Link>
+        </Link> */}
       </div>
 
 
 
       {/* Footer */}
       <footer className="mt-12 text-gray-400 text-sm">
-        &copy; {new Date().getFullYear()} Sistem Admin. All rights reserved.
+        &copy; {new Date().getFullYear()} SIPENA. All rights reserved.
       </footer>
     </div>
   );

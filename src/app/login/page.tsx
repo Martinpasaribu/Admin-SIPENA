@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // pages/login.tsx
 "use client";
 
@@ -5,6 +6,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { Eye, EyeOff, LogIn } from "lucide-react"; // untuk ikon lucide-react
+import { useToast } from "@/components/ToastContect";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -12,18 +14,23 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  const { showToast } = useToast();
+    
   const handleLogin = async () => {
     if (!form.user_id || !form.password) {
-      alert("Email dan password wajib diisi!");
+      showToast("warning",`Email dan password wajib diisi!`);
       return;
     }
 
     try {
       setLoading(true);
-      await api.post("api/v1/auth/login", form);
+      const res = await api.post("api/v1/auth/login", form);
       router.push("/dashboard");
-    } catch (err) {
-      alert(`Login gagal! Periksa kembali ${err}`);
+
+      showToast("success", `${res.data.message}`);
+
+    } catch (error: any) {
+      showToast("error",`${error.response?.data.message}`);
     } finally {
       setLoading(false);
     }
@@ -36,7 +43,7 @@ export default function LoginPage() {
           Selamat Datang 
         </h1>
         <p className="text-gray-500 text-center mb-8">
-          Silakan login untuk melanjutkan ke dashboard
+          Login untuk melanjutkan ke dashboard Admin
         </p>
 
         {/* Input Email */}
@@ -89,7 +96,7 @@ export default function LoginPage() {
         </button>
 
         {/* Footer */}
-        <p className="text-sm text-center text-gray-500 mt-6">
+        {/* <p className="text-sm text-center text-gray-500 mt-6">
           Belum punya akun?{" "}
           <a
             href="/register"
@@ -97,7 +104,7 @@ export default function LoginPage() {
           >
             Daftar sekarang
           </a>
-        </p>
+        </p> */}
       </div>
     </div>
   );

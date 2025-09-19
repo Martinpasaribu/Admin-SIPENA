@@ -23,7 +23,7 @@ export default function RegisterPage() {
    
   const handleRegister = async () => {
     if (!form.user_id || !form.email || !form.password) {
-      alert("Semua field wajib diisi!");
+       showToast("warning", `Semua field wajib diisi!`);
       return;
     }
 

@@ -197,7 +197,7 @@ export default function ReportsPage() {
           <input
 
             type="text"
-            placeholder="Cari Customer | Room"
+            placeholder="Cari No Report"
             className="border rounded-lg p-2 text-sm"
             value={filters.searchTerm}
             onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}

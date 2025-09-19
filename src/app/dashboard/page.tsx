@@ -117,7 +117,7 @@ export default function DashboardPage() {
             <User size={28} />
           </div>
           <div>
-            <h2 className="text-lg font-semibold">Halo, {userName} </h2>
+            <h2 className="text-lg font-semibold">Halo, {user?.userName} </h2>
             <p className="text-sm opacity-90">
               Senang melihat Anda kembali. Semoga harimu menyenangkan!
             </p>
