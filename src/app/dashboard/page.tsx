@@ -23,6 +23,7 @@ import { authService } from "@/lib/auth";
 
 import { AnimatePresence, motion } from 'framer-motion';
 import DashboardSummaryMini from "./components/DashboardSummaryMini";
+import Link from "next/link";
 
 export default function DashboardPage() {
   const [userName] = useState("Admin");
@@ -92,20 +93,31 @@ export default function DashboardPage() {
       };
     }, []);
 
-
+    const handleLogout = async () => {
+      try {
+        await authService.logout();
+        router.push("/login"); // Redirect ke halaman login setelah berhasil logout
+      } catch (error) {
+        console.error("Logout gagal:", error);
+      }
+    };
+    
 
 
   return (
     <main className="min-h-screen bg-gray-50 p-6">
       {/* Header */}
+      
       <header className="flex justify-between items-center bg-white shadow-sm rounded-xl px-6 py-4 mb-8">
         <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
         <div className="flex items-center gap-3">
+          <Link href="/settings">
+            <button className="p-2 hover:bg-gray-100 rounded-full transition">
+              <Settings size={20} className="text-gray-700" />
+            </button>
+          </Link>
           <button className="p-2 hover:bg-gray-100 rounded-full transition">
-            <Settings size={20} className="text-gray-700" />
-          </button>
-          <button className="p-2 hover:bg-gray-100 rounded-full transition">
-            <LogOut size={20} className="text-gray-700" />
+            <LogOut onClick={handleLogout} size={20} className="text-gray-700" />
           </button>
         </div>
       </header>
@@ -117,7 +129,7 @@ export default function DashboardPage() {
             <User size={28} />
           </div>
           <div>
-            <h2 className="text-lg font-semibold">Halo, {user?.userName} </h2>
+            <h2 className="text-lg font-semibold">Halo, {user?.username} </h2>
             <p className="text-sm opacity-90">
               Senang melihat Anda kembali. Semoga harimu menyenangkan!
             </p>

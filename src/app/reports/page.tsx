@@ -3,7 +3,7 @@ import ReportsPage from "./ReportsClient";
 
 export default function ReportsWrapper() {
   return (
-    <Suspense fallback={<div>Loading reports...</div>}>
+    <Suspense fallback={<div className="bg-white"></div>}>
       <ReportsPage />
     </Suspense>
   );

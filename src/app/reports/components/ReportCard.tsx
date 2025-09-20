@@ -1,9 +1,11 @@
+/* eslint-disable @next/next/no-img-element */
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { IRepair, Report } from "../models";
 import { Progress, StatusBroken, TypeBroken } from "../constant";
-import { Trash2, Pencil, Wrench } from "lucide-react";
+import { Trash2, Pencil, Wrench, Image } from "lucide-react";
 import { FormatDate } from "../utils/Date";
 import RepairModal from "./RepairModal";
 import { useState } from "react";
@@ -20,6 +22,7 @@ export default function ReportCard({ report, onEdit, onDelete }: Props) {
 
   const [ repair, setRepair ] = useState<IRepair>();
   const [showDescModal, setShowDescModal] = useState(false);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const HandleRepairModal = (data : any) => {
     setRepair(data);
@@ -124,6 +127,25 @@ export default function ReportCard({ report, onEdit, onDelete }: Props) {
             </p>
           </div>
 
+          <div className="flex flex-col gap-1">
+
+            <div className="flex flex-col gap-1">
+              <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Gambar
+              </p>
+              {report.image ? (
+                <p
+                  onClick={() => setPreviewImage(report.image)} // ✅ trigger preview image
+                  className="flex justify-center mt-1 text-sm font-semibold text-gray-900 cursor-pointer"
+                >
+                  <Image size={20} className="text-gray-500 hover:text-gray-700 transition" />
+                </p>
+              ) : (
+                <span className="text-xs text-gray-400 italic">Tidak ada</span>
+              )}
+            </div>
+          </div>
+
 
         </div>
 
@@ -161,6 +183,26 @@ export default function ReportCard({ report, onEdit, onDelete }: Props) {
       </div>
 
 
+
+      {/* 🔹 Preview Image Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setPreviewImage(null)}
+        >
+          <img
+            src={previewImage}
+            alt="Preview"
+            className="max-w-[90%] max-h-[90%] rounded-lg shadow-2xl transition-transform duration-300 scale-100 hover:scale-105"
+          />
+          <button
+            onClick={() => setPreviewImage(null)}
+            className="absolute top-6 right-6 text-white bg-black/50 hover:bg-black/70 p-2 px-3 rounded-full transition"
+          >
+            ✕
+          </button>
+        </div>
+      )}
 
       <RepairModal
         show={showDescModal}

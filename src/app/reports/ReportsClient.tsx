@@ -18,6 +18,8 @@ import LoadingSpinner from "@/components/Loading";
 import { useSearchParams } from "next/navigation";
 import { GetDivisionCodes } from "../division/services/service_division";
 import { Division } from "../division/models";
+import ExportButtons from "./components/ExportButton";
+import ReportFiltersComponent from "./components/FilterComponent";
 
 export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
@@ -191,117 +193,51 @@ export default function ReportsPage() {
    <div className="p-8 bg-gray-50 text-gray-800 min-h-screen">
       <h1 className="text-3xl font-bold mb-8 text-gray-900">Manajemen Laporan</h1>
 
-      <div className="bg-white p-4 rounded-lg shadow mb-6 flex flex-wrap gap-4 justify-between">
-        <div className="flex flex-wrap gap-4 items-center">
-         
-          <input
-
-            type="text"
-            placeholder="Cari No Report"
-            className="border rounded-lg p-2 text-sm"
-            value={filters.searchTerm}
-            onChange={(e) => setFilters({ ...filters, searchTerm: e.target.value })}
-
-          />
-
-          <select
-            className="border rounded-lg p-2 text-sm"
-            value={filters.report_type}
-            onChange={(e) => setFilters({ ...filters, report_type: e.target.value })}
-          >
-            <option value="">Semua Tipe Report</option>
-            <option value="BK">Bangunan Kantor</option>
-            <option value="BL">Bangunan Lainya</option>
-            <option value="K">Komplain</option>
-            <option value="M">Mesin</option>
-          </select>
-
-          <select
-            className="border rounded-lg p-2 text-sm"
-            value={filters.division_key}
-            onChange={(e) => setFilters({ ...filters, division_key: e.target.value })}
-          >
-            <option value="">Semua Divisi</option>
-            {division.map((r) => (
-                <option
-                  key={r._id}
-                  value={r._id}
-                  disabled={!r.status}
-                  className={!r.status ? "text-gray-400" : ""}
-                >
-                  {r.code} {r.name} {!r.status && "( Non Aktif )"}
-                </option>
-            ))}
-          </select>
-
-          <select
-            className="border rounded-lg p-2 text-sm"
-            value={filters.broken_type}
-            onChange={(e) => setFilters({ ...filters, broken_type: e.target.value })}
-          >
-            <option value="">Semua Kategori Kerusakan</option>
-            <option value="R">Ringan</option>
-            <option value="S">Sedang</option>
-            <option value="B">Berat</option>
-          </select>
-
-
-          <select
-            className="border rounded-lg p-2 text-sm"
-            value={filters.progress}
-            onChange={(e) => setFilters({ ...filters, progress: e.target.value })}
-          >
-            <option value="">Semua Progress</option>
-            <option value="A">Antrian</option>
-            <option value="P">Proses</option>
-            <option value="S">Selesai</option>
-            <option value="T">Tolak</option>
-            <option value="RU">Review Update</option>
-          </select>
-          
-        </div>
-        
-        <div className="flex flex-wrap gap-2">
-          {filters.startDate && filters.endDate && (
-            <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg text-sm">
-              <span>
-                {formatDate(filters.startDate)} - {formatDate(filters.endDate)}
-              </span>
-              <button
-                onClick={handleClearDateFilter}
-                className="text-red-500 hover:text-red-700 font-bold"
-                aria-label="Hapus filter tanggal"
-              >
-                &times;
-              </button>
-            </div>
-          )}
-          <button
-            onClick={() => setShowDateModal(true)}
-            className="bg-blue-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-800 transition-colors"
-          >
-            Filter Tanggal
-          </button>
-        </div>
-      </div>
+      {/* Filter Component */}
+      <ReportFiltersComponent
+        filters={filters}
+        setFilters={setFilters}
+        division={division}
+        formatDate={formatDate}
+        handleClearDateFilter={handleClearDateFilter}
+        setShowDateModal={setShowDateModal}
+      />
 
       {/* 👇 Rubah kode ini untuk menggunakan ikon dari lucide-react */}
-      <div className="flex justify-end mb-4">
-        <div className="flex border border-gray-300 bg-white rounded overflow-hidden">
+      <div className="flex justify-between items-center mb-4">
+        {/* Placeholder biar spacing rapih */}
+
+
+        {/* Export Buttons */}
+        <div className="flex items-center space-x-2">
+          <ExportButtons data={filteredReports} />
+        </div>
+
+        {/* Switch View */}
+        <div className="flex border border-gray-200 bg-gray-50 rounded-xl shadow-sm overflow-hidden">
           <button
-            onClick={() => setViewMode('card')}
-            className={viewMode === 'card' ? activeBtnClass : inactiveBtnClass}
+            onClick={() => setViewMode("card")}
+            className={`px-3 py-2 transition-colors duration-200 ${
+              viewMode === "card"
+                ? "bg-green-100 text-green-700"
+                : "bg-transparent text-gray-500 hover:bg-gray-100"
+            }`}
           >
-            <LayoutGrid size={18} className="" />
+            <LayoutGrid size={18} />
           </button>
           <button
-            onClick={() => setViewMode('table')}
-            className={viewMode === 'table' ? activeBtnClass : inactiveBtnClass}
+            onClick={() => setViewMode("table")}
+            className={`px-3 py-2 transition-colors duration-200 ${
+              viewMode === "table"
+                ? "bg-green-100 text-green-700"
+                : "bg-transparent text-gray-500 hover:bg-gray-100"
+            }`}
           >
-            <List size={20} className="" />
+            <List size={20} />
           </button>
         </div>
       </div>
+
 
       {showDateModal && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center">
@@ -328,7 +264,7 @@ export default function ReportsPage() {
         <LoadingSpinner />
 
       ) : filteredReports.length === 0 ? (
-        <p className="text-gray-500">Tidak ada laporan sesuai filter.</p>
+        <p className="text-gray-500 mt-5">Tidak ada laporan sesuai filter.</p>
       ) : (
         <div>
           {viewMode === "card" ? (
