@@ -12,6 +12,7 @@ import { useToast } from "@/components/ToastContect";
 import LoadingSpinner from "@/components/Loading";
 import Link from "next/link";
 import { StatusAdmin } from "./constant";
+import { FormatDateTime } from "@/utils/Format/date";
 
 export default function SettingsPage() {
   const [modalState, setModalState] = useState<null | "register" | "list" | "update">(null);
@@ -93,22 +94,26 @@ export default function SettingsPage() {
             <h3 className="text-lg font-semibold mb-4">Your Profile</h3>
             <div className="space-y-2 text-sm">
               <p>
-                <span className="font-medium w-24 inline-block">Username:</span>{" "}
+                <span className="font-medium w-24 inline-block">User ID :</span>{" "}
+                {profile?.user_id}
+              </p>
+              <p>
+                <span className="font-medium w-24 inline-block">Username :</span>{" "}
                 {profile?.username}
               </p>
               <p>
-                <span className="font-medium w-24 inline-block">Email:</span>{" "}
+                <span className="font-medium w-24 inline-block">Email :</span>{" "}
                 {profile?.email}
               </p>
               <p>
-                <span className="font-medium w-24 inline-block">Role:</span>
-                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${StatusAdmin(profile.role).className}`}>
-                  {StatusAdmin(profile.role).label}
+                <span className="font-medium w-24 inline-block">Role :</span>
+                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${StatusAdmin(profile?.role).className}`}>
+                  {StatusAdmin(profile?.role).label}
                 </span>
               </p>
               <p>
-                <span className="font-medium w-24 inline-block">Joined:</span>{" "}
-                {profile?.createdAt}
+                <span className="font-medium w-24 inline-block">Joined :</span>{" "}
+                {FormatDateTime(profile?.createdAt)}
               </p>
             </div>
           </div>
