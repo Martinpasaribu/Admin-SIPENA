@@ -155,23 +155,10 @@ export default function FacilityPage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {/* 🔹 Kondisi saat data kosong */}
                   {Facility && Facility.length === 0 ? (
-                    <tr>
+                    <tr className="t">
                       <td colSpan={4} className="text-center py-12 text-gray-500">
                         <div className="flex flex-col items-center justify-center p-8">
-                          <svg
-                            className="w-48 h-48 text-gray-300"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M9.172 16.172a4 4 0 015.656 0M9.172 16.172a4 4 0 005.656 0M10.586 11.586a1 1 0 11-1.414 1.414 1 1 0 011.414-1.414zM15 13a3 3 0 11-6 0 3 3 0 016 0zM17 21a2 2 0 100-4 2 2 0 000 4zM20 18a2 2 0 11-4 0 2 2 0 014 0zM18 10a2 2 0 100-4 2 2 0 000 4z"
-                            />
-                          </svg>
+
                           <p className="mt-4 text-lg font-medium text-gray-600">
                             Belum ada item  yang ditambahkan.
                           </p>

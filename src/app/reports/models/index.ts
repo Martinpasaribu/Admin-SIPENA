@@ -1,4 +1,5 @@
 import { Division } from "@/app/division/models";
+import { Facility } from "@/app/facility/models";
 
 export interface Room {
   _id: string;
@@ -32,6 +33,7 @@ export interface Report {
   report_code: string;
   employee_key?:  Customer; // bisa ObjectId (string) atau populated Customer
   division_key?:  Division; // bisa ObjectId (string) atau populated Customer
+  facility_key?: Facility;
   report_type:  "BK" | "M" | "BL" | "K";
   broken_type:  "R" | "S" | "B";
   progress: "A" | "P" | "S" | "T" | "RU";
@@ -52,6 +54,7 @@ export interface ReportFilterMapping {
   report_code: string;
   employee_key?:  Customer; // bisa ObjectId (string) atau populated Customer
   division_key?:  Division; // bisa ObjectId (string) atau populated Customer
+  facility_key?:  Facility; // bisa ObjectId (string) atau populated Customer
   report_type:  "BK" | "M" | "BL" | "K";
   broken_type:  "R" | "S" | "B";
   progress: "A" | "P" | "S" | "T" | "RU";

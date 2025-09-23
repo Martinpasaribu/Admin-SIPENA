@@ -46,6 +46,9 @@ const ReportTable: React.FC<ReportTableProps> = ({
               Pelapor
             </th>
             <th scope="col" className="px-6 py-3">
+              Fasilitas
+            </th>
+            <th scope="col" className="px-6 py-3">
               Divisi
             </th>
             <th scope="col" className="px-6 py-3">
@@ -91,6 +94,10 @@ const ReportTable: React.FC<ReportTableProps> = ({
               </td>
 
               {/* Divisi */}
+              <td className="px-6 py-4 text-gray-700">
+                {report.facility_key?.name || '-'}
+              </td>
+
               <td className="px-6 py-4 text-gray-700">
                 {report.division_key?.code || '-'}
               </td>

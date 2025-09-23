@@ -26,11 +26,14 @@ const ItemPage = () => {
   const [selectedItem, setSelectedItem] = useState<ItemsModel | null>(null);
   
   const [showEditModal, setShowEditModal] = useState(false);
-    const [editData, setEditData] = useState<any | null>(null);
+  const [editData, setEditData] = useState<any | null>(null);
 
-    const [deleteId, setDeleteId] = useState<{ _id: string } | null>(null);
+  const [deleteId, setDeleteId] = useState<{ _id: string } | null>(null);
 
   const { showToast } = useToast();
+
+  // 🔹 untuk toggle sort asc/desc
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   // 🔹 fetch pertama kali
   useEffect(() => {
@@ -74,7 +77,7 @@ const ItemPage = () => {
     } finally {
       setLoading(false);
     }
-  }, [_id, showToast]); // ✅ tambahkan _id
+  }, [_id, showToast]);
 
   // 🔹 panggil refetch hanya saat _id berubah
   useEffect(() => {
@@ -83,7 +86,7 @@ const ItemPage = () => {
 
   const handleUpdateStatus = async (_id: string, newStatus: ItemsModel["status"]) => {
     try {
-      const updated = await UpdateStatusItems(_id, newStatus);
+      await UpdateStatusItems(_id, newStatus);
       setItems((prev) =>
         prev.map((f) => (f._id === _id ? { ...f, status: newStatus } : f))
       );
@@ -95,26 +98,30 @@ const ItemPage = () => {
   };
 
   const handleDeleteItems = async () => {
-      if (!deleteId) return;
-      try {
-        
-        await DeletedItems(deleteId._id);
-        showToast("success", "Berhasil menghapus Items");
-  
-          await refetchItems();
-    
-        setDeleteId(null);
-      } catch (err: any) {
-        showToast("error", err.response?.data?.message || err.message);
-        setDeleteId(null);
-      }
+    if (!deleteId) return;
+    try {
+      await DeletedItems(deleteId._id);
+      showToast("success", "Berhasil menghapus Items");
+      await refetchItems();
+      setDeleteId(null);
+    } catch (err: any) {
+      showToast("error", err.response?.data?.message || err.message);
+      setDeleteId(null);
+    }
   };
-      
+
+  // 🔹 fungsi untuk sort NUP numeric
+  const sortedItems = [...items].sort((a, b) => {
+    const nupA = Number(a.nup);
+    const nupB = Number(b.nup);
+
+    if (isNaN(nupA) || isNaN(nupB)) return 0;
+
+    return sortOrder === "asc" ? nupA - nupB : nupB - nupA;
+  });
 
   return (
     <div className="p-6">
-
-
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-semibold text-gray-800">
           Daftar Items {name}
@@ -138,8 +145,13 @@ const ItemPage = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                  NUP
+                <th
+                  onClick={() =>
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                  }
+                  className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider cursor-pointer"
+                >
+                  NUP {sortOrder === "asc" ? "↑" : "↓"}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Nama
@@ -162,29 +174,26 @@ const ItemPage = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {items && items.length === 0 ? (
+              {sortedItems && sortedItems.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="text-center py-12 text-gray-500">
+                  <td colSpan={7} className="text-center py-12 text-gray-500">
                     Belum ada Item {name} yang ditambahkan.
                   </td>
                 </tr>
               ) : (
-                items.map((f) => (
+                sortedItems.map((f) => (
                   <tr
-                    key={f.nup}
+                    key={f._id}
                     className="group text-slate-800 hover:bg-gray-50 transition-colors duration-200 ease-in-out"
                   >
                     <td className="px-6 py-4 whitespace-nowrap">{f.nup}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{f.name}</td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                        {
-                          f.division_key && typeof f.division_key !== "string"
-                            ? f.division_key.code || "-"
-                          : "-"
-                        }
+                      {f.division_key && typeof f.division_key !== "string"
+                        ? f.division_key.code || "-"
+                        : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{f.qty}</td>
-
                     <td className="px-6 py-4 whitespace-nowrap">
                       <ScrollText
                         className="text-gray-400 cursor-pointer hover:text-gray-600"
@@ -194,13 +203,14 @@ const ItemPage = () => {
                         }}
                       />
                     </td>
-                    
-  
                     <td className="px-6 py-4 whitespace-nowrap">
                       <select
                         value={f.status}
                         onChange={(e) =>
-                          handleUpdateStatus(f._id, e.target.value as ItemsModel["status"])
+                          handleUpdateStatus(
+                            f._id,
+                            e.target.value as ItemsModel["status"]
+                          )
                         }
                         className={`border rounded p-1 ${StatusItems(f.status).className}`}
                       >
@@ -209,12 +219,8 @@ const ItemPage = () => {
                         <option value="B">Rusak</option>
                       </select>
                     </td>
-
                     <td className="px-6 py-4 whitespace-nowrap">
-                      
-                      <div
-                        className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                      >
+                      <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                         <button
                           onClick={() => {
                             setEditData(f);
@@ -224,18 +230,15 @@ const ItemPage = () => {
                         >
                           <PencilLine size={16} />
                         </button>
-
-                      <button
-                        onClick={() => setDeleteId({ _id: f._id })}
-                        className="flex gap-1 items-center p-2 text-white bg-gray-400 rounded-lg shadow hover:bg-gray-500 transition-colors"
-                        title="Hapus"
-                      >
+                        <button
+                          onClick={() => setDeleteId({ _id: f._id })}
+                          className="flex gap-1 items-center p-2 text-white bg-gray-400 rounded-lg shadow hover:bg-gray-500 transition-colors"
+                          title="Hapus"
+                        >
                           <Trash2 size={16} />
                         </button>
                       </div>
-
                     </td>
-
                   </tr>
                 ))
               )}
@@ -243,7 +246,6 @@ const ItemPage = () => {
           </table>
         </div>
       )}
-
 
       <ConfirmDeleteModal
         isOpen={!!deleteId}
@@ -269,7 +271,6 @@ const ItemPage = () => {
         onClose={() => setShowDescModal(false)}
       />
 
-
       {editData && (
         <EditItemsModal
           show={showEditModal}
@@ -281,7 +282,6 @@ const ItemPage = () => {
           }}
         />
       )}
-
     </div>
   );
 };

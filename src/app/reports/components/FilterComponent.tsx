@@ -63,7 +63,8 @@ export default function ReportFiltersComponent({
               disabled={!r.status}
               className={!r.status ? "text-gray-400" : ""}
             >
-              {r.code} {r.name} {!r.status && "( Non Aktif )"}
+              {/* {r.code} {r.name} {!r.status && "( Non Aktif )"} */}
+              {r.code}{!r.status && "( Non Aktif )"}
             </option>
           ))}
         </select>
