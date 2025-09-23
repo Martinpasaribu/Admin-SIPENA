@@ -58,6 +58,8 @@ const ItemPage = () => {
     fetchData();
   }, [_id, name]); // ✅ hapus "items" dari dependency
 
+  // ini udah id update
+
   // 🔹 fungsi untuk refetch data
   const refetchItems = useCallback(async () => {
     setLoading(true);
