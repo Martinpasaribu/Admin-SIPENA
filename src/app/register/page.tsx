@@ -60,7 +60,7 @@ export default function RegisterPage() {
       const res = await api.post("api/v1/admin/register", form);
       // alert("Berhasil daftar!");
       showToast("success", `${res.data.message}`);
-      router.push("/login");
+      router.push("/settings");
     } catch (err : any) {
       // alert("Gagal daftar! Periksa kembali data Anda.");
       showToast("error",`${err.response?.data.message}`);
