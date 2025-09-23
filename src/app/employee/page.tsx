@@ -79,7 +79,9 @@ export default function EmployeePage() {
   };
 
   return (
+
     <div className="min-h-screen p-6">
+      {/* hehe */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-semibold text-gray-800">Daftar Employee</h1>
         <button
@@ -87,6 +89,7 @@ export default function EmployeePage() {
           className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800"
         >
           + Tambah 
+
         </button>
       </div>
 
