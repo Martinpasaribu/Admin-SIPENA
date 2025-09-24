@@ -70,7 +70,7 @@ export default function ReportCard({ report, onEdit, onDelete }: Props) {
           {/* Kolom 4: Fasilitas */}
           <div className="flex flex-col gap-1">
             <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Divisi
+              Fasilitas
             </p>
            <span className="text-sm text-gray-700 font-semibold rounded-md">
               {report.facility_key?.name || '-'}
