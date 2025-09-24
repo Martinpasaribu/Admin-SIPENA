@@ -31,8 +31,16 @@ export default function RegisterPage() {
           
           const isValid = await authService.checkSession();
   
-          if (!isValid) {
-            router.push("/login?session=expired");
+          const profile = await authService.fetchProfile();
+
+          if (profile?.role !== 'SA') {
+            // router.push("/login?session=expired");
+            router.push("/settings");
+            return;
+          }
+
+          if (!isValid ) {
+           router.push("/settings");
             return;
           }
   

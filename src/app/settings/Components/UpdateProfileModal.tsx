@@ -145,7 +145,7 @@ export default function UpdateProfileModal({
           className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none"
         />
 
-        {users.role ==='SA' && (
+        {users?.role ==='SA' && (
           <select
             value={form.role}
             onChange={(e) => setForm({ ...form, role: e.target.value })}

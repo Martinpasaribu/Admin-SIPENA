@@ -141,20 +141,24 @@ export default function SettingsPage() {
               <Plus size={18} />
               Register Admin
             </button> */}
-            <Link href={'register'}
-              className="flex items-center justify-center gap-2 w-full bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-700 transition"
-            >
-              <Plus size={18} />
-              Register Admin
-            </Link>
-            {profile.role ==='SA' && (
-              <button
-                onClick={() => setModalState("list")}
-                className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
-              >
-                <List size={18} />
-                View Admins
-              </button>
+            {profile?.role ==='SA' && (
+              <div className="space-y-3">
+
+                <Link href={'register'}
+                  className="flex items-center justify-center gap-2 w-full bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-700 transition"
+                >
+                  <Plus size={18} />
+                  Register Admin
+                </Link>
+
+                <button
+                  onClick={() => setModalState("list")}
+                  className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
+                >
+                  <List size={18} />
+                  View Admins
+                </button>
+              </div>
             )}
             <button
               onClick={() => setModalState("update")}
