@@ -111,6 +111,7 @@ export default function DashboardPage() {
       <header className="flex justify-between items-center bg-white shadow-sm rounded-xl px-6 py-4 mb-8">
         <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
         <div className="flex items-center gap-3">
+
           <Link href="/settings">
             <button className="p-2 hover:bg-gray-100 rounded-full transition">
               <Settings size={20} className="text-gray-700" />
@@ -119,6 +120,7 @@ export default function DashboardPage() {
           <button className="p-2 hover:bg-gray-100 rounded-full transition">
             <LogOut onClick={handleLogout} size={20} className="text-gray-700" />
           </button>
+          
         </div>
       </header>
 

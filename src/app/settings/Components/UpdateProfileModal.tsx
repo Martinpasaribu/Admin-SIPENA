@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import BaseModal from "./BaseModal";
 import { useToast } from "@/components/ToastContect";
 import { UpdateAdmin } from "../service/service_list_admin";
@@ -11,11 +11,16 @@ interface UpdateProfileModalProps {
   isOpen: boolean;
   onClose: () => void;
   update: () => void;
-  users: any
+  users: any;
   adminId?: string; // id admin yang mau diupdate
 }
 
-export default function UpdateProfileModal({ isOpen, onClose, update, users }: UpdateProfileModalProps) {
+export default function UpdateProfileModal({
+  isOpen,
+  onClose,
+  update,
+  users,
+}: UpdateProfileModalProps) {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -24,43 +29,71 @@ export default function UpdateProfileModal({ isOpen, onClose, update, users }: U
     username: "",
     email: "",
     password: "",
+    phone: "",
     role: "",
   });
 
   const formatUserId = (value: string) => {
     return value
-      .toLowerCase()         // jadi huruf kecil semua
-      .replace(/\s+/g, "")   // hapus semua spasi
+      .toLowerCase()
+      .replace(/\s+/g, "")
       .replace(/[^a-z0-9_]/g, ""); // hanya huruf, angka, underscore
   };
 
-
   const { showToast } = useToast();
 
+  const resetForm = () => {
+    setForm({
+      user_id: "",
+      username: "",
+      email: "",
+      password: "",
+      phone: "",
+      role: "",
+    });
+  };
+
+    // isi form otomatis ketika modal terbuka
+  useEffect(() => {
+    if (isOpen && users) {
+      setForm({
+        user_id: users.user_id || "",
+        username: users.username || "",
+        email: users.email || "",
+        phone: users.phone || "",
+        password: "",
+        role: users.role || ""
+      });
+    }
+  }, [isOpen, users]);
+
+  
   const handleUpdate = async (e: React.FormEvent) => {
-    
     e.preventDefault();
 
     try {
       setLoading(true);
-      if(!users._id){
+      if (!users._id) {
         throw new Error("User id kosong");
       }
+
       const res = await UpdateAdmin(users?._id || "", form);
+
       showToast("success", res.message || "Update berhasil");
-      onClose(); // tutup modal setelah update
-      update()
+
+      resetForm(); // kosongkan form
+      onClose(); // tutup modal
+      update(); // refresh data
     } catch (err: any) {
-      showToast("error", err.message);
+      showToast("error", err.message || "Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <BaseModal title="Update Your Profile" isOpen={isOpen} onClose={onClose}>
+    <BaseModal title="Update Admin Profile" isOpen={isOpen} onClose={onClose}>
       <form className="space-y-4" onSubmit={handleUpdate}>
-          
         <input
           type="text"
           placeholder="Masukkan user id"
@@ -82,7 +115,7 @@ export default function UpdateProfileModal({ isOpen, onClose, update, users }: U
         <div className="relative">
           <input
             type={showPassword ? "text" : "password"}
-            placeholder="New password"
+            placeholder="New Password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             className="w-full px-4 py-3 border rounded-lg text-gray-700 focus:ring-2 focus:ring-green-400 focus:outline-none pr-10"
@@ -101,6 +134,14 @@ export default function UpdateProfileModal({ isOpen, onClose, update, users }: U
           placeholder="New Email"
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
+          className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none"
+        />
+
+        <input
+          type="number"
+          placeholder="New Telepon"
+          value={form.phone}
+          onChange={(e) => setForm({ ...form, phone: e.target.value })}
           className="w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-indigo-500 outline-none"
         />
 

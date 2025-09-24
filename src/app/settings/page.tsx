@@ -59,7 +59,7 @@ export default function SettingsPage() {
 
   return (
     <div className="min-h-screen p-10 bg-gray-50 text-gray-900">
-      <h1 className="text-4xl font-extrabold mb-10 tracking-tight text-center">
+      <h1 className="text-3xl font-extrabold mb-10 tracking-tight text-left">
         Settings
       </h1>
 
@@ -106,6 +106,10 @@ export default function SettingsPage() {
                 {profile?.email}
               </p>
               <p>
+                <span className="font-medium w-24 inline-block">Phone :</span>{" "}
+                {profile?.phone}
+              </p>
+              <p>
                 <span className="font-medium w-24 inline-block">Role :</span>
                 <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${StatusAdmin(profile?.role).className}`}>
                   {StatusAdmin(profile?.role).label}
@@ -123,35 +127,44 @@ export default function SettingsPage() {
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-col gap-4 w-full md:w-64">
-          {/* <button
-            onClick={() => setModalState("register")}
-            className="flex items-center justify-center gap-2 w-full bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-indigo-700 transition"
-          >
-            <Plus size={18} />
-            Register Admin
-          </button> */}
-          <Link href={'register'}
-            className="flex items-center justify-center gap-2 w-full bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-700 transition"
-          >
-            <Plus size={18} />
-            Register Admin
-          </Link>
-          <button
-            onClick={() => setModalState("list")}
-            className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
-          >
-            <List size={18} />
-            View Admins
-          </button>
-          <button
-            onClick={() => setModalState("update")}
-            className="flex items-center justify-center gap-2 w-full bg-green-500 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-green-600 transition"
-          >
-            <Edit2 size={18} />
-            Update Profile
-          </button>
+        <div className="flex flex-col ">
+
+          <div className="h-[3.5rem]">
+                <h1 className="text-lg font-bold text-slate-900"> Aksi</h1>
+          </div>
+
+          <div className="flex flex-col gap-4 w-full md:w-64">
+            {/* <button
+              onClick={() => setModalState("register")}
+              className="flex items-center justify-center gap-2 w-full bg-indigo-600 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-indigo-700 transition"
+            >
+              <Plus size={18} />
+              Register Admin
+            </button> */}
+            <Link href={'register'}
+              className="flex items-center justify-center gap-2 w-full bg-gray-600 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-700 transition"
+            >
+              <Plus size={18} />
+              Register Admin
+            </Link>
+            <button
+              onClick={() => setModalState("list")}
+              className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
+            >
+              <List size={18} />
+              View Admins
+            </button>
+            <button
+              onClick={() => setModalState("update")}
+              className="flex items-center justify-center gap-2 w-full bg-green-500 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-green-600 transition"
+            >
+              <Edit2 size={18} />
+              Update Profile
+            </button>
+          </div>
+
         </div>
+        
       </div>
 
       {/* Preferences */}
