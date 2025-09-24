@@ -147,13 +147,15 @@ export default function SettingsPage() {
               <Plus size={18} />
               Register Admin
             </Link>
-            <button
-              onClick={() => setModalState("list")}
-              className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
-            >
-              <List size={18} />
-              View Admins
-            </button>
+            {profile.role ==='SA' && (
+              <button
+                onClick={() => setModalState("list")}
+                className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
+              >
+                <List size={18} />
+                View Admins
+              </button>
+            )}
             <button
               onClick={() => setModalState("update")}
               className="flex items-center justify-center gap-2 w-full bg-green-500 text-white px-6 py-3 rounded-xl font-semibold shadow hover:bg-green-600 transition"
