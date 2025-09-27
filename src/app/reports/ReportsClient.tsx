@@ -190,8 +190,8 @@ export default function ReportsPage() {
 
   return (
 
-   <div className="p-8 bg-gray-50 text-gray-800 min-h-screen">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">Manajemen Laporan</h1>
+   <div className=" p-2 md:p-8 bg-gray-50 text-gray-800 min-h-screen">
+      <h1 className="text-xl p-4 md:p-0 md:text-3xl font-bold mb-2 md:mb-8 text-gray-900">Manajemen Laporan</h1>
 
       {/* Filter Component */}
       <ReportFiltersComponent

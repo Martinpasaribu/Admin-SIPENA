@@ -93,90 +93,120 @@ export default function EmployeePage() {
         </button>
       </div>
 
-      <div className="overflow-hidden bg-white rounded-lg shadow-md mt-10">
-        <table className="min-w-full text-gray-600 divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">User ID</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Username</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Phone</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Division</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Aksi</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {loading ? (
-              <tr>
-                <td colSpan={7} className="text-center py-6">
-                  <LoadingSpinner />
-                </td>
-              </tr>
-            ) : employee.length === 0 ? (
-              <tr>
-                <td colSpan={7} className="text-center py-12 text-gray-500">
-                  Belum ada employee.
-                </td>
-              </tr>
-            ) : (
-              employee.map((c) => (
-                <tr key={c._id} className="group hover:bg-gray-50 transition">
-                  <td className="px-6 py-4">{c.user_id}</td>
-                  <td className="px-6 py-4">{c.username}</td>
-                  <td className="px-6 py-4">{c.email}</td>
-                  <td className="px-6 py-4">{c.phone}</td>
-                  <td className="flex gap-2 px-6 py-4">
-                    {c.division_key.map((item: any, index: number) => (
-                      
+      <div className="w-full overflow-x-auto bg-white rounded-lg shadow-md mt-10">
+        <div className="min-w-max">
+          <table className="w-full text-sm text-left text-gray-500">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">User ID</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Username</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Email</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Phone</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Division</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Status</th>
+                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Aksi</th>
+                  </tr>
+                </thead>
 
-                        <p key={index}>
-                            {item?.code}
-                        </p>
-
-                    ))}
-                  </td>
-
-                    
-                  <td className="px-6 py-4">
-                    <select
-                      value={c.status}
-                      onChange={(e) =>
-                        handleUpdateStatus(c._id, e.target.value as EmployeeClient["status"])
-                      }
-                      className={`border rounded p-1 ${StatusBooking(c.status).className}`}
+              <tbody className="bg-white divide-y divide-gray-200">
+                {loading ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-6">
+                      <LoadingSpinner />
+                    </td>
+                  </tr>
+                ) : employee.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="text-center py-12 text-gray-500">
+                      Belum ada employee.
+                    </td>
+                  </tr>
+                ) : (
+                  employee.map((c) => (
+                    <tr
+                      key={c._id}
+                      className="group hover:bg-gray-50 transition duration-200"
                     >
-                      <option value="A">Aktif</option>
-                      <option value="B">Blokir</option>
-                      <option value="P">Pending</option>
-                    </select>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition">
-                      <button
-                        onClick={() => {
-                          setEditData(c);
-                          setShowEditModal(true);
-                        }}
-                        className="p-2 text-gray-400 border rounded-lg shadow"
-                        title="Edit"
-                      >
-                        <PencilLine size={16} />
-                      </button>
-                      <button
-                        onClick={() => setDeleteId({ _id: c._id })}
-                        className="p-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500"
-                        title="Hapus"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+                      {/* User ID */}
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                        {c.user_id}
+                      </td>
+
+                      {/* Username */}
+                      <td className="px-6 py-4 text-sm text-gray-800">{c.username}</td>
+
+                      {/* Email */}
+                      <td className="px-6 py-4 text-sm text-gray-700">{c.email}</td>
+
+                      {/* Phone */}
+                      <td className="px-6 py-4 text-sm text-gray-700">{c.phone}</td>
+
+                      {/* Division */}
+                      <td className="px-6 py-4">
+                        <div className="flex flex-wrap gap-2">
+                          {c.division_key.map((item: any, index: number) => (
+                            <span
+                              key={index}
+                              className="px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-md border border-gray-200"
+                            >
+                              {item?.code || "-"}
+                            </span>
+                          ))}
+                        </div>
+                      </td>
+
+                      {/* Status */}
+                      <td className="px-6 py-4">
+                        <select
+                          value={c.status}
+                          onChange={(e) =>
+                            handleUpdateStatus(c._id, e.target.value as EmployeeClient["status"])
+                          }
+                          className={`border rounded p-1 text-sm ${StatusBooking(c.status).className}`}
+                        >
+                          <option value="A">Aktif</option>
+                          <option value="B">Blokir</option>
+                          <option value="P">Pending</option>
+                        </select>
+                      </td>
+
+                      {/* Aksi */}
+                      <td className="px-6 py-4 text-center align-middle">
+                        <div
+                          className={`
+                            flex justify-center items-center gap-2
+                            opacity-100 sm:opacity-0 sm:group-hover:opacity-100
+                            transition-opacity duration-300
+                          `}
+                        >
+                          <button
+                            onClick={() => {
+                              setEditData(c);
+                              setShowEditModal(true);
+                            }}
+                            className="p-2 text-gray-400 border rounded-lg shadow hover:text-blue-500 transition"
+                            title="Edit"
+                          >
+                            <PencilLine size={16} />
+                          </button>
+
+                          <button
+                            onClick={() => setDeleteId({ _id: c._id })}
+                            className="p-2 bg-gray-400 text-white rounded-lg shadow hover:bg-gray-500 transition"
+                            title="Hapus"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+
+
+              </table>
+          </div>
       </div>
 
       {/* Modal Hapus */}

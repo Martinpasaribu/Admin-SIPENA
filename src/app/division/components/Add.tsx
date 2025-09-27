@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
-import { Division, DivisionClient } from "../models";
+import { useState, useEffect } from "react";
+import { DivisionClient } from "../models";
 import { useToast } from "@/components/ToastContect";
 import { AddDivision } from "../services/service_division";
 
@@ -23,38 +23,55 @@ export default function AddDivisionModal({ show, onClose, onSuccess }: Props) {
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
+  // 🔹 Reset form otomatis setiap kali modal dibuka
+  useEffect(() => {
+    if (show) {
+      resetForm();
+    }
+  }, [show]);
+
+  // 🔹 Fungsi untuk ubah field form
   const handleChange = (field: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // 🔹 Fungsi reset form
+  const resetForm = () => {
+    setForm(INITIAL_FORM);
+  };
+
+  // 🔹 Fungsi close modal + reset form
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
+  // 🔹 Submit data ke server
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!form.name || !form.code || !form.desc) {
-      showToast("error", "Nama, Desc dan Kode harus diisi");
+      showToast("error", "Nama, Kode, dan Deskripsi wajib diisi!");
       return;
     }
-    // if (!/^([AD])\d{1,2}$/i.test(form.code.trim())) {
-    //   showToast(
-    //     "warning",
-    //     "Kode harus diawali D atau A dan diikuti angka, contoh: A01, D12"
-    //   );
-    //   return;
-    // }
-
+    
     setLoading(true);
     try {
       const payload: DivisionClient = {
-        name: form.name,
-        code: form.code,
-        desc: form.desc,
+        name: form.name.trim(),
+        code: form.code.trim().toUpperCase(),
+        desc: form.desc.trim(),
       };
+
       await AddDivision(payload);
-      showToast("success", " berhasil ditambahkan!");
-      setForm(INITIAL_FORM);
+      showToast("success", "Division berhasil ditambahkan!");
+
+      resetForm();
       onSuccess();
-    } catch (error : any) {
+      onClose();
+    } catch (error: any) {
       console.error(error);
-      showToast("error", `${error.message}, coba lagi.`);
+      showToast("error", `${error.message || "Terjadi kesalahan, coba lagi."}`);
     } finally {
       setLoading(false);
     }
@@ -63,10 +80,16 @@ export default function AddDivisionModal({ show, onClose, onSuccess }: Props) {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm  text-gray-600 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">Tambah Division</h2>
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm text-gray-600 flex items-center justify-center z-50 p-4">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-white rounded-xl shadow-lg w-full max-w-md p-6"
+      >
+        <h2 className="text-lg font-semibold mb-4 text-gray-900">
+          Tambah Division
+        </h2>
 
+        {/* Nama */}
         <label className="block text-sm mb-1">Nama</label>
         <input
           type="text"
@@ -77,17 +100,21 @@ export default function AddDivisionModal({ show, onClose, onSuccess }: Props) {
           required
         />
 
-
+        {/* Kode */}
         <label className="block text-sm mb-1">Kode</label>
         <input
           type="text"
           value={form.code}
-          onChange={(e) => handleChange("code", e.target.value.toUpperCase())}
-          className="w-full border rounded-lg p-2 mb-3"
+          onChange={(e) =>
+            handleChange("code", e.target.value.toUpperCase().trim())
+          }
+          className="w-full border rounded-lg p-2 mb-3 uppercase"
           disabled={loading}
+          maxLength={4}
           required
         />
 
+        {/* Deskripsi */}
         <label className="block text-sm mb-1">Deskripsi</label>
         <textarea
           value={form.desc}
@@ -97,10 +124,11 @@ export default function AddDivisionModal({ show, onClose, onSuccess }: Props) {
           rows={3}
         />
 
-        <div className="flex justify-end gap-3">
+        {/* Tombol Aksi */}
+        <div className="flex justify-end gap-3 mt-4">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50"
             disabled={loading}
           >
@@ -108,10 +136,13 @@ export default function AddDivisionModal({ show, onClose, onSuccess }: Props) {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800"
-            disabled={loading}
+            className={`px-4 py-2 rounded-lg text-white ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-700 hover:bg-green-800"
+            }`}
           >
-            {loading ? "Mengirim..." : "Simpan"}
+            {loading ? "Menyimpan..." : "Simpan"}
           </button>
         </div>
       </form>

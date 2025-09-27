@@ -7,6 +7,7 @@ export interface ItemsModel {
   facility_key: string;
   name: string;
   nup: string;
+  code: string;
   qty: number;
   desc: string;
   division_key: Division;

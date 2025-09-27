@@ -5,7 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import RegisterAdminModal from "./Components/RegisterAdminModal";
 import AdminListModal from "./Components/AdminListModal";
 import UpdateProfileModal from "./Components/UpdateProfileModal";
-import { Plus, List, Edit2, Zap } from "lucide-react";
+import { Plus, List, Edit2, Zap, MailCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { authService } from "@/lib/auth";
 import { useToast } from "@/components/ToastContect";
@@ -122,8 +122,8 @@ export default function SettingsPage() {
             </div>
           </div>
 
-        )
-}
+          )
+        }
         </div>
 
         {/* Action Buttons */}
@@ -158,6 +158,15 @@ export default function SettingsPage() {
                   <List size={18} />
                   View Admins
                 </button>
+
+                <Link href={'settings/contact-manage'}
+                  className="flex items-center justify-center gap-2 w-full bg-gray-200 text-gray-800 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition"
+                >
+                  <MailCheck size={18} />
+
+                  Message
+                </Link>
+
               </div>
             )}
             <button

@@ -19,10 +19,10 @@ export default function RepairModal({ show, repair, onClose }: Props) {
         {/* Header Modal */}
         <div className="pb-4 border-b border-gray-200">
           <h2 className="text-lg font-bold text-gray-800">
-            Harga Perbaikan
+            Info Perbaikan
           </h2>
-          <p className="mt-2 text-xl font-bold text-gray-600">
-            Rp{repair?.price?.toLocaleString('id-ID') || '0'}
+          <p className="mt-2 text-md font-bold text-gray-600">
+            Biaya Rp {repair?.price?.toLocaleString('id-ID') || '0'}
           </p>
         </div>
 

@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -32,61 +31,64 @@ export default function AddItemsModal({
 }: Props) {
   const [form, setForm] = useState<ItemsMappingAdd>(INITIAL_FORM);
   const [loading, setLoading] = useState(false);
-  const [division, setCodeDivision] = useState<any[]>([]);
+  const [division, setDivision] = useState<any[]>([]);
   const { showToast } = useToast();
 
-  // 🔹 Fetch division list
+  // 🔹 Fetch division list sekali saja
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchDivision = async () => {
       try {
         const res = await GetDivisionCode();
-        setCodeDivision(res || []);
-
-        // Set default division_key ke yg pertama status true
-        const firstActive = res.find((d: any) => d.status === true);
-        if (firstActive) {
-          setForm((prev) => ({
-            ...prev,
-            division_key: firstActive._id,
-          }));
-        }
+        setDivision(res || []);
       } catch (error: any) {
         console.error("❌ Gagal fetch division:", error);
         showToast("error", error.message);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchData();
+    fetchDivision();
   }, []);
 
-  // 🔹 Reset form tiap kali modal dibuka
+  // 🔹 Reset form saat modal dibuka
   useEffect(() => {
     if (show && division.length > 0) {
       const firstActive = division.find((d) => d.status === true);
-      setForm({
-        ...INITIAL_FORM,
-        facility_key,
-        division_key: firstActive ? firstActive._id : "",
-      });
+      resetForm(firstActive ? firstActive._id : "");
     }
-  }, [show, division, facility_key]);
+  }, [show, division]);
 
+  // 🔹 Fungsi umum untuk ubah field form
   const handleChange = <K extends keyof ItemsMappingAdd>(
     field: K,
     value: ItemsMappingAdd[K]
   ) => {
-    setForm((prev: any) => ({ ...prev, [field]: value }));
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // 🔹 Fungsi reset form ke awal
+  const resetForm = (divisionId = "") => {
+    setForm({
+      ...INITIAL_FORM,
+      facility_key,
+      division_key: divisionId,
+    });
+  };
+
+  // 🔹 Close modal + reset otomatis
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
+
+  // 🔹 Submit data ke server
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!form.name || !form.nup || !form.desc) {
-      showToast("error", "Nama, Desc dan Kode harus diisi");
+      showToast("error", "Nama, NUP dan Deskripsi wajib diisi!");
       return;
     }
+
     setLoading(true);
     try {
       const payload: ItemsMappingAdd = {
@@ -96,12 +98,13 @@ export default function AddItemsModal({
 
       await AddItems(facility_key, payload);
 
-      showToast("success", "Items Berhasil ditambahkan!");
-      setForm(INITIAL_FORM);
+      showToast("success", "Items berhasil ditambahkan!");
+      resetForm();
       onSuccess();
+      onClose();
     } catch (error: any) {
       console.error(error);
-      showToast("error", `${error.message}, coba lagi.`);
+      showToast("error", `${error.message || "Terjadi kesalahan"}`);
     } finally {
       setLoading(false);
     }
@@ -110,7 +113,7 @@ export default function AddItemsModal({
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm text-gray-600  flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm text-gray-600 flex items-center justify-center z-50 p-4">
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-xl shadow-lg w-full max-w-2xl p-6"
@@ -119,6 +122,7 @@ export default function AddItemsModal({
           Tambah Items
         </h2>
 
+        {/* NUP */}
         <div>
           <label className="block text-sm mb-1">NUP</label>
           <input
@@ -131,6 +135,7 @@ export default function AddItemsModal({
           />
         </div>
 
+        {/* Nama */}
         <div>
           <label className="block text-sm mb-1">Nama</label>
           <input
@@ -143,23 +148,26 @@ export default function AddItemsModal({
           />
         </div>
 
+        {/* Division */}
         <select
           className="w-full border rounded-lg p-2 mb-3"
           value={form.division_key}
           onChange={(e) => handleChange("division_key", e.target.value)}
+          disabled={loading}
         >
           {division.map((r) => (
             <option
-              key={r.code}
+              key={r._id}
               value={r._id}
-              disabled={!r.status} // kalau status false, option disable
+              disabled={!r.status}
               className={!r.status ? "text-gray-400" : ""}
             >
-              {r.code} {r.name} {!r.status && "( Non Aktif )"}
+              {r.code} — {r.name} {!r.status && "(Non Aktif)"}
             </option>
           ))}
         </select>
 
+        {/* Deskripsi */}
         <div>
           <label className="block text-sm mb-1">Deskripsi</label>
           <textarea
@@ -171,10 +179,11 @@ export default function AddItemsModal({
           />
         </div>
 
+        {/* Tombol Aksi */}
         <div className="flex justify-end gap-3 mt-6">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50"
             disabled={loading}
           >
@@ -182,10 +191,13 @@ export default function AddItemsModal({
           </button>
           <button
             type="submit"
-            className="px-4 py-2 bg-green-700 text-white rounded-lg hover:bg-green-800"
-            disabled={loading}
+            className={`px-4 py-2 rounded-lg text-white ${
+              loading
+                ? "bg-gray-400 cursor-not-allowed"
+                : "bg-green-700 hover:bg-green-800"
+            }`}
           >
-            {loading ? "Mengirim..." : "Simpan"}
+            {loading ? "Menyimpan..." : "Simpan"}
           </button>
         </div>
       </form>

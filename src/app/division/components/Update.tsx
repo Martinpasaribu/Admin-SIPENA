@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Division, DivisionClient } from "../models";
+import { Division } from "../models";
 import { useToast } from "@/components/ToastContect";
 import { UpdateDivision } from "../services/service_division";
 
@@ -10,7 +10,7 @@ interface Props {
   show: boolean;
   onClose: () => void;
   division: Division;
-  onSuccess: () => void; // Callback saat sukses
+  onSuccess: () => void;
 }
 
 export default function EditDivisionModal({ show, onClose, division, onSuccess }: Props) {
@@ -22,18 +22,35 @@ export default function EditDivisionModal({ show, onClose, division, onSuccess }
   const [loading, setLoading] = useState(false);
   const { showToast } = useToast();
 
+  // ⏺ Saat modal dibuka, isi form sesuai data divisi
   useEffect(() => {
-    if (division) {
+    if (division && show) {
       setForm({
-        name: division.name,
-        desc: division.desc,
-        code: division.code,
+        name: division.name || "",
+        desc: division.desc || "",
+        code: division.code || "",
       });
     }
-  }, [division]);
+  }, [division, show]);
+
+  // 🔹 Fungsi reset form
+  const resetForm = () => {
+    setForm({
+      name: "",
+      desc: "",
+      code: "",
+    });
+  };
+
+  // 🔹 Handle tombol batal / close
+  const handleClose = () => {
+    resetForm();
+    onClose();
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!form.name) {
       showToast("error", "Nama harus diisi");
       return;
@@ -49,7 +66,8 @@ export default function EditDivisionModal({ show, onClose, division, onSuccess }
       await UpdateDivision(division._id, updatedData);
       showToast("success", "Divisi berhasil diperbarui!");
       onSuccess();
-    } catch (error : any) {
+      handleClose(); // 🔹 Tutup modal dan reset form setelah sukses
+    } catch (error: any) {
       console.error(error);
       showToast("error", `${error.message}`);
     } finally {
@@ -60,14 +78,15 @@ export default function EditDivisionModal({ show, onClose, division, onSuccess }
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm  text-gray-500 flex justify-center items-center z-50 p-4">
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm text-gray-500 flex justify-center items-center z-50 p-4">
       <form
         onSubmit={handleSubmit}
         className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative"
       >
+        {/* Tombol Close */}
         <button
           type="button"
-          onClick={onClose}
+          onClick={handleClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
           disabled={loading}
         >
@@ -76,6 +95,7 @@ export default function EditDivisionModal({ show, onClose, division, onSuccess }
 
         <h2 className="text-lg font-semibold mb-4 text-gray-900">Edit Division</h2>
 
+        {/* Input Nama */}
         <label className="block text-sm mb-1">Nama</label>
         <input
           type="text"
@@ -86,6 +106,7 @@ export default function EditDivisionModal({ show, onClose, division, onSuccess }
           required
         />
 
+        {/* Input Code */}
         <label className="block text-sm mb-1">Kode</label>
         <input
           type="text"
@@ -96,6 +117,7 @@ export default function EditDivisionModal({ show, onClose, division, onSuccess }
           required
         />
 
+        {/* Input Deskripsi */}
         <label className="block text-sm mb-1">Description</label>
         <textarea
           value={form.desc}
@@ -105,10 +127,11 @@ export default function EditDivisionModal({ show, onClose, division, onSuccess }
           rows={3}
         />
 
+        {/* Tombol Aksi */}
         <div className="flex justify-end gap-3">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleClose}
             className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50"
             disabled={loading}
           >

@@ -12,11 +12,9 @@ import { CategoryFacility, StatusFacility, UnitFacility } from "./constant";
 import { Facility, FacilityClient } from "./models";
 import { ItemNavigate } from "../function/NavigateRoute";
 import LoadingSpinner from "@/components/Loading";
-import { ItemsModel } from "./item/[_id]/models";
 import ItemDescModal from "./components/ItemDescModal";
 
 export default function FacilityPage() {
-
   const [Facility, setFacility] = useState<Facility[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -26,22 +24,20 @@ export default function FacilityPage() {
   const [editData, setEditData] = useState<Facility | null>(null);
   const [deleteId, setDeleteId] = useState<{ _id: string } | null>(null);
   const [showDescModal, setShowDescModal] = useState(false);
-  const [selectedItem, setSelectedItem] = useState< any | null>(null);
-    
+  const [selectedItem, setSelectedItem] = useState<any | null>(null);
 
-  const GotoNavigate = ItemNavigate()
-
+  const GotoNavigate = ItemNavigate();
   const { showToast } = useToast();
 
   const refetchFacilitys = useCallback(async () => {
     setLoading(true);
     try {
       const data = await GetFacility();
-      setFacility(data || []); // 🔹 Pastikan selalu array
+      setFacility(data || []);
       setError(null);
     } catch (err) {
       console.error("Error fetching Facility:", err);
-      showToast("error", "Gagal memuat data divison");
+      showToast("error", "Gagal memuat data facility");
       setError("Gagal memuat data Facility");
       setFacility([]);
     } finally {
@@ -55,7 +51,7 @@ export default function FacilityPage() {
 
   const handleUpdateStatus = async (code: string, newStatus: Facility["status"]) => {
     try {
-      const updated = await UpdateStatusFacility(code, newStatus);
+      await UpdateStatusFacility(code, newStatus);
       setFacility((prev) =>
         prev.map((f) => (f._id === code ? { ...f, status: newStatus } : f))
       );
@@ -67,25 +63,23 @@ export default function FacilityPage() {
   };
 
   const handleDeleteFacility = async () => {
-      if (!deleteId) return;
-      try {
-        await DeletedFacility(deleteId._id);
-        showToast("success", "Berhasil menghapus Facility");
-  
-        // 🔹 Ambil ulang data setelah berhasil menghapus
-        const data = await GetFacility();
-        setFacility(data || []); // 🔹 Pastikan selalu array
-    
-        setDeleteId(null);
-      } catch (err: any) {
-        showToast("error", err.response?.data?.message || err.message);
-        setDeleteId(null);
-      }
-    };
-    
+    if (!deleteId) return;
+    try {
+      await DeletedFacility(deleteId._id);
+      showToast("success", "Berhasil menghapus Facility");
+
+      const data = await GetFacility();
+      setFacility(data || []);
+      setDeleteId(null);
+    } catch (err: any) {
+      showToast("error", err.response?.data?.message || err.message);
+      setDeleteId(null);
+    }
+  };
 
   return (
     <div className="min-h-screen p-6 bg-gray-50">
+      {/* 🔹 Header */}
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-semibold text-gray-800">Daftar Facility</h1>
         <button
@@ -96,184 +90,164 @@ export default function FacilityPage() {
         </button>
       </div>
 
+      {/* 🔹 Loading / Error / Table */}
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          {/* Skeleton Loader berbasis CSS */}
-          {/* <div className="w-12 h-12 border-4 border-t-4 border-gray-200 border-solid rounded-full animate-spin border-t-indigo-600"></div> */}
-
           <LoadingSpinner />
-          
         </div>
       ) : error ? (
         <p className="text-center py-4 text-red-600">{error}</p>
       ) : (
         <div className="overflow-x-auto bg-white rounded-lg shadow mt-10">
-          <div className="overflow-auto-x bg-white rounded-lg shadow-md">
+          <table className="min-w-full divide-y divide-gray-200 text-gray-600">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Kode</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Nama</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Satuan</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Kategori</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Items</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Data Before</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Data After</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Desc</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Aksi</th>
+              </tr>
+            </thead>
 
-            <div className="overflow-auto-x text-gray-600 bg-white rounded-lg shadow-md">
-              
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Kode
-                    </th>
-                    
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Nama
-                    </th>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {Facility.length === 0 ? (
+                <tr>
+                  <td colSpan={10} className="text-center py-12 text-gray-500">
+                    Belum ada facility yang ditambahkan.
+                  </td>
+                </tr>
+              ) : (
+                Facility.map((f) => (
+                  <tr
+                    key={f._id}
+                    className="group hover:bg-gray-50 transition-colors duration-200 ease-in-out"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap">{f.code}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{f.name}</td>
 
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Satuan
-                    </th>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <h1 className="text-center px-2 py-1 rounded-md">
+                        {UnitFacility(f.unit).label}
+                      </h1>
+                    </td>
 
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Kategori
-                    </th>
-
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      QTY
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider ">
-                      Data Before
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Data After
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Desc
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th scope="col" className="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
-                      Aksi
-                    </th>
-
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {/* 🔹 Kondisi saat data kosong */}
-                  {Facility && Facility.length === 0 ? (
-                    <tr className="t">
-                      <td colSpan={4} className="text-center py-12 text-gray-500">
-                        <div className="flex flex-col items-center justify-center p-8">
-
-                          <p className="mt-4 text-lg font-medium text-gray-600">
-                            Belum ada item  yang ditambahkan.
-                          </p>
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    Facility.map((f) => (
-                      <tr
-                        key={f.code}
-                        className="group hover:bg-gray-50 transition-colors duration-200 ease-in-out"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap">{f.code}</td>
-                        <td className="px-6 py-4 whitespace-nowrap">{f.name}</td>
-
-                        <td className={`px-6 py-4 whitespace-nowrap m-2 p-1`}>
-                          <h1 className={`text-center px-2 py-1 rounded-md `}>{UnitFacility(f.unit).label}</h1>
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <h1 className={`text-center px-2 py-1 rounded-md `}>{CategoryFacility(f.category).label}</h1>
-                        </td>
-
-                        <td onClick={() => GotoNavigate(f._id, f.name)} className="cursor-pointer px-6 py-4 whitespace-nowrap">
-                          <p className="bg-gray-700 text-white px-2 py-1 rounded-md">ITEM {f.qty}</p>
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap">
-                            <ul className="flex justify-around gap-2 w-[8rem]">
-                              {/* <li>{f.data_after.date}</li> */}
-                              <li >{f.data_before.qty}</li>
-                              <li>{f.data_before.price}</li>
-                            </ul>
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap">
-                             <ul className="flex justify-around gap-2 w-[8rem]">
-                              {/* <li>{f.data_after.date}</li> */}
-                              <li>{f.data_after.qty}</li>
-                              <li>{f.data_after.price}</li>
-                            </ul>
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <ScrollText
-                            className="text-gray-400 cursor-pointer hover:text-gray-600"
-                            onClick={() => {
-                              setSelectedItem(f);
-                              setShowDescModal(true);
-                            }}
-                          />
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          {/* 🔹 Tombol Status yang tidak diubah */}
-                          <select
-                            value={String(f.status)}
-                            onChange={(e) => {
-                              const newStatus = e.target.value as FacilityClient['status'];
-                              handleUpdateStatus(f._id, newStatus);
-                            }}
-                            className={`border rounded p-1 ${StatusFacility(f.status).className}`}
-                          >
-                            <option value="A">Aktif</option>
-                            <option value="R">Sedang Di Perbaiki</option>
-                            <option value="B">Rusak</option>
-                          </select>
-                        </td>
-
-                        <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <h1 className="text-center px-2 py-1 rounded-md">
+                        {CategoryFacility(f.category).label}
+                      </h1>
+                    </td>
+                    <td
+                      onClick={() => GotoNavigate(f._id, f.name)}
+                      // Tambahkan kelas untuk efek hover pada cursor
+                      className="cursor-pointer px-6 py-4 whitespace-nowrap"
+                    >
+                      <p
+                        className="
+                          inline-block
+                          // Desain baru: Biru cerah (Aksen), Padding lebih nyaman
+                          bg-blue-500 text-white 
+                          px-3 py-1.5 rounded-lg text-sm font-semibold text-center 
                           
-                          <div
-                            className="flex items-center space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                          >
-                            <button
-                              onClick={() => {
-                                setEditData(f);
-                                setShowEditModal(true);
-                              }}
-                              className="flex gap-1 items-center px-2 py-2 text-gray-700 border-[1px] bg-gray-50 rounded-lg shadow hover:bg-gray-100 transition-colors"
-                            >
-                              <PencilLine size={16} />
-                            </button>
+                          // Efek interaktif: Shadow dan Hover
+                          shadow-md 
+                          transition duration-300 ease-in-out
+                          hover:bg-blue-600 hover:shadow-lg
+                        "
+                      >
+                        ITEM { f.qty }
+                      </p>
+                    </td>
 
-                            <button
-                              onClick={() => setDeleteId({ _id: f._id })}
-                              className="flex gap-1 items-center p-2 text-white bg-gray-400 rounded-lg shadow hover:bg-gray-500 transition-colors"
-                              title="Hapus"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <ul className="flex justify-around gap-2 w-[8rem]">
+                        <li>{f.data_before.qty}</li>
+                        <li>{f.data_before.price}</li>
+                      </ul>
+                    </td>
 
-                        </td>
-                        
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <ul className="flex justify-around gap-2 w-[8rem]">
+                        <li>{f.data_after.qty}</li>
+                        <li>{f.data_after.price}</li>
+                      </ul>
+                    </td>
 
-            </div>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <ScrollText
+                        className="text-gray-400 cursor-pointer hover:text-gray-600"
+                        onClick={() => {
+                          setSelectedItem(f);
+                          setShowDescModal(true);
+                        }}
+                      />
+                    </td>
 
-          </div>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <select
+                        value={String(f.status)}
+                        onChange={(e) =>
+                          handleUpdateStatus(f._id, e.target.value as FacilityClient["status"])
+                        }
+                        className={`border rounded p-1 ${StatusFacility(f.status).className}`}
+                      >
+                        <option value="A">Aktif</option>
+                        <option value="R">Sedang Diperbaiki</option>
+                        <option value="B">Rusak</option>
+                      </select>
+                    </td>
+
+                    {/* 🔹 Tombol aksi responsif */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div
+                        className="
+                          flex items-center space-x-2
+                          transition-opacity duration-300
+                          opacity-100 md:opacity-0 md:group-hover:opacity-100
+                        "
+                      >
+                        <button
+                          onClick={() => {
+                            setEditData(f);
+                            setShowEditModal(true);
+                          }}
+                          className="flex items-center p-2 text-gray-700 border bg-gray-50 rounded-lg shadow hover:bg-gray-100"
+                          title="Edit"
+                        >
+                          <PencilLine size={16} />
+                        </button>
+
+                        <button
+                          onClick={() => setDeleteId({ _id: f._id })}
+                          className="flex items-center p-2 text-white bg-gray-400 rounded-lg shadow hover:bg-gray-500"
+                          title="Hapus"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       )}
 
-
+      {/* 🔹 Modal Konfirmasi Hapus */}
       <ConfirmDeleteModal
         isOpen={!!deleteId}
         onConfirm={handleDeleteFacility}
         onCancel={() => setDeleteId(null)}
-        message="Yakin ingin menghapus divisi ini?"
+        message="Yakin ingin menghapus facility ini?"
       />
-      
+
+      {/* 🔹 Modal Tambah */}
       <AddFacilityModal
         show={showAddModal}
         onClose={() => setShowAddModal(false)}
@@ -283,15 +257,15 @@ export default function FacilityPage() {
         }}
       />
 
-
+      {/* 🔹 Modal Deskripsi */}
       <ItemDescModal
         show={showDescModal}
         name={selectedItem?.name || ""}
         desc={selectedItem?.desc || ""}
         onClose={() => setShowDescModal(false)}
       />
-      
 
+      {/* 🔹 Modal Edit */}
       {editData && (
         <EditFacilityModal
           show={showEditModal}

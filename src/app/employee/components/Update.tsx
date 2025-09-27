@@ -21,10 +21,8 @@ interface Props {
   onUpdated: () => void;
 }
 
-// --- helpers ---
+// --- Helpers ---
 function pickDivisionId(d: any): string {
-  // Bentuk yang mungkin:
-  // "64f..." | { _id: "64f..." } | { _id: { _id: "64f...", code, ... } } | { id: "64f..." }
   if (!d) return "";
   if (typeof d === "string") return d;
   if (typeof d._id === "string") return d._id;
@@ -35,19 +33,16 @@ function pickDivisionId(d: any): string {
 
 function getDivisionLabel(divisions: Division[], id: string) {
   const found = divisions.find((x) => x._id === id);
-  if (found?.code) return found.code;
-  // fallback aman biar gak render object
-  return id ? `${id.slice(0, 6)}…` : "-";
+  return found?.code || id?.slice(0, 6) + "…";
 }
 
-export default function EditCustomerModal({
+export default function EditEmployeeModal({
   show,
   onClose,
   employee,
   division,
   onUpdated,
 }: Props) {
-
   const { showToast } = useToast();
 
   const [username, setUsername] = useState(employee.username);
@@ -56,9 +51,8 @@ export default function EditCustomerModal({
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<Employee["role"]>(employee.role);
   const [showPassword, setShowPassword] = useState(false);
+  const [divisionKeys, setDivisionKeys] = useState<string[]>([]);
 
-
-      // ✅ Sync ulang state kalau `employee` berubah
   useEffect(() => {
     if (employee) {
       setUsername(employee.username);
@@ -66,22 +60,15 @@ export default function EditCustomerModal({
       setPhone(employee.phone || 0);
       setPassword("");
       setRole(employee.role);
-
       setDivisionKeys(
         Array.isArray(employee.division_key)
           ? employee.division_key.map(pickDivisionId).filter(Boolean)
           : []
       );
     }
-  }, [employee]); // <- jalan setiap employee baru dipilih
+  }, [employee]);
 
-  // ⚡ normalize ke array of string ID
-  const [divisionKeys, setDivisionKeys] = useState<string[]>(
-    Array.isArray(employee.division_key)
-      ? employee.division_key.map(pickDivisionId).filter(Boolean)
-      : []
-  );
-
+  
   if (!show) return null;
 
   const handleAddDivision = (id: string) => {
@@ -101,13 +88,12 @@ export default function EditCustomerModal({
         email,
         phone,
         role,
-        // kirim sebagai array of object {_id}
         division_key: divisionKeys.map((_id) => ({ _id })),
       };
       if (password.trim()) payload.password = password;
 
       await UpdateEmployee(employee._id, payload);
-      showToast("success", "Employee berhasil diperbarui ");
+      showToast("success", "Employee berhasil diperbarui ✅");
       onUpdated();
       onClose();
     } catch (error: any) {
@@ -115,67 +101,91 @@ export default function EditCustomerModal({
     }
   };
 
+  const handleClose = () => {
+      setUsername(employee.username);
+      setEmail(employee.email);
+      setPhone(employee.phone || 0);
+      setPassword("");
+      setRole(employee.role);
+      setDivisionKeys( Array.isArray(employee.division_key)
+          ? employee.division_key.map(pickDivisionId).filter(Boolean)
+          : []);
+      setShowPassword(false);
+      onClose();
+  };
 
 
   return (
-    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white text-gray-600 rounded-lg p-6 w-full max-w-lg shadow-lg">
-        <h2 className="text-lg font-semibold mb-4">Edit Employee</h2>
+    <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white text-gray-700 rounded-xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6 relative shadow-lg">
+        {/* Tombol close */}
+        <button
+          onClick={handleClose}
+          className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
+        >
+          ✕
+        </button>
+
+        <h2 className="text-lg font-semibold mb-5 text-gray-900">Edit Employee</h2>
 
         {/* Username */}
-        <input
-          type="text"
-          className="w-full border rounded-lg p-2 mb-3"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          placeholder="Username"
-        />
+        <div className="mb-3">
+          <label className="block text-sm font-medium mb-1">Username</label>
+          <input
+            type="text"
+            className="w-full border rounded-lg p-2"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Username"
+          />
+        </div>
 
-        <div className="relative">
-
-          {/* Password (opsional) */}
+        {/* Password */}
+        <div className="mb-3 relative">
+          <label className="block text-sm font-medium mb-1">Password Baru (opsional)</label>
           <input
             type={showPassword ? "text" : "password"}
-            className="w-full border rounded-lg p-2 mb-3"
+            className="w-full border rounded-lg p-2 pr-10"
             value={password}
-            placeholder="Password baru (opsional)"
             onChange={(e) => setPassword(e.target.value)}
+            placeholder="Kosongkan jika tidak diganti"
           />
-
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-3 top-5 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+            className="absolute right-3 top-[2.8rem] -translate-y-1/2 text-gray-500 hover:text-gray-700"
           >
-          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
           </button>
-
         </div>
 
-          {/* Email */}
+        {/* Email */}
+        <div className="mb-3">
+          <label className="block text-sm font-medium mb-1">Email</label>
           <input
             type="email"
-            className="w-full border rounded-lg p-2 mb-3"
+            className="w-full border rounded-lg p-2"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="Email"
           />
-
-
+        </div>
 
         {/* Phone */}
-        <input
-          type="number"
-          className="w-full border rounded-lg p-2 mb-3"
-          value={phone}
-          onChange={(e) => setPhone(Number(e.target.value))}
-          placeholder="Nomor Telepon"
-        />
-
-        {/* Division Manager */}
-        <label className="text-sm font-medium mb-1">Division</label>
         <div className="mb-4">
-          {/* Tambah Division */}
+          <label className="block text-sm font-medium mb-1">Nomor Telepon</label>
+          <input
+            type="number"
+            className="w-full border rounded-lg p-2"
+            value={phone}
+            onChange={(e) => setPhone(Number(e.target.value))}
+            placeholder="Nomor telepon"
+          />
+        </div>
+
+        {/* Division */}
+        <div className="mb-5">
+          <label className="block text-sm font-medium mb-2">Divisi</label>
           <div className="flex gap-2 mb-2">
             <select
               className="border rounded-lg p-2 flex-1"
@@ -199,50 +209,52 @@ export default function EditCustomerModal({
             </select>
           </div>
 
-          {/* List division terpilih */}
           <ul className="space-y-1">
             {divisionKeys.map((id) => (
               <li
                 key={id}
-                className="flex justify-between items-center border p-2 rounded"
+                className="flex justify-between items-center border p-2 rounded text-sm"
               >
-                <span>{getDivisionLabel(division, id)}</span>
+                <span className="text-gray-800 font-medium">
+                  Division {getDivisionLabel(division, id)}
+                </span>
                 <button
                   type="button"
                   onClick={() => handleRemoveDivision(id)}
-                  className="p-2 bg-gray-400 rounded-lg shadow hover:bg-gray-500 text-white transition-colors duration-200 ease-in-out"
+                  className="p-2 bg-gray-400 rounded-lg shadow hover:bg-gray-500 text-white transition-colors"
                 >
                   <Trash2 size={16} />
                 </button>
-
               </li>
             ))}
           </ul>
         </div>
 
         {/* Role */}
-        <label className="text-sm font-medium mb-1">Role</label>
-        <select
-          className="w-full border rounded-lg p-2 mb-3"
-          value={role}
-          onChange={(e) => setRole(e.target.value as Employee["role"])}
-        >
-          <option value="E">Pegawai</option>
-          <option value="H1">Kepala Bagian 1</option>
-          <option value="H2">Kepala Bagian 2</option>
-        </select>
+        <div className="mb-5">
+          <label className="block text-sm font-medium mb-1">Peran</label>
+          <select
+            className="w-full border rounded-lg p-2"
+            value={role}
+            onChange={(e) => setRole(e.target.value as Employee["role"])}
+          >
+            <option value="E">Pegawai</option>
+            <option value="H1">Kepala Bagian 1</option>
+            <option value="H2">Kepala Bagian 2</option>
+          </select>
+        </div>
 
-        {/* Actions */}
-        <div className="flex justify-end gap-2">
+        {/* Tombol aksi */}
+        <div className="flex flex-col sm:flex-row justify-end gap-3 mt-6">
           <button
-            onClick={onClose}
-            className="px-4 py-2 bg-gray-50 border rounded-lg"
+            onClick={handleClose}
+            className="w-full sm:w-auto px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-50"
           >
             Batal
           </button>
           <button
             onClick={handleSubmit}
-            className="px-4 py-2 bg-green-700 text-white rounded-lg"
+            className="w-full sm:w-auto px-4 py-2 rounded-lg text-white bg-green-700 hover:bg-green-800"
           >
             Update
           </button>
