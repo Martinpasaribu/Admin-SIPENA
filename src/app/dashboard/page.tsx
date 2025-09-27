@@ -181,7 +181,7 @@ export default function DashboardPage() {
       {/* Modul Laporan Prioritas dan Aktivitas Terbaru */}
       <section className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
         <DashboardPriorityList report={dashboard?.pendingReports}/>
-        <DashboardActivityList />
+        <DashboardActivityList activities={dashboard?.latestReports || []} />
       </section>
     </main>
   );

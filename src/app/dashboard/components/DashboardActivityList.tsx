@@ -1,47 +1,49 @@
-// components/DashboardActivityList.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { Bell } from "lucide-react";
 
-const dummyRecentActivities = [
-  {
-    id: 1,
-    type: "Laporan Baru",
-    description: "Laporan baru dari pengguna John Doe.",
-    date: "2025-09-07",
-    status: "Menunggu",
-  },
-  {
-    id: 2,
-    type: "Laporan Selesai",
-    description: "Laporan fasilitas 'Keran Bocor' telah selesai.",
-    date: "2025-09-06",
-    status: "Selesai",
-  },
-  {
-    id: 3,
-    type: "Pengguna Baru",
-    description: "Pengguna baru Jane Smith terdaftar.",
-    date: "2025-09-06",
-    status: "Aktif",
-  },
-  {
-    id: 4,
-    type: "Laporan Baru",
-    description: "Laporan baru dari pengguna Jane Smith.",
-    date: "2025-09-05",
-    status: "Menunggu",
-  },
-];
+interface Activity {
+  id: string;
+  type: string;
+  description: string;
+  date: string;
+  status: string;
+}
 
-export default function DashboardActivityList() {
+interface DashboardActivityListProps {
+  activities: Activity[];
+}
+
+export default function DashboardActivityList({ activities }: DashboardActivityListProps) {
+
+  console.log(activities);
+  
+  if (!activities || activities.length === 0) {
+    return (
+      <div className="bg-white p-6 rounded-xl shadow-sm">
+        <h3 className="text-lg font-semibold mb-4 text-gray-900">Aktivitas Terbaru</h3>
+        <p className="text-gray-500">Belum ada aktivitas terbaru.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm">
       <h3 className="text-lg font-semibold mb-4 text-gray-900">Aktivitas Terbaru</h3>
       <ul className="space-y-4">
-        {dummyRecentActivities.map((activity) => (
-          <li key={activity.id} className="flex items-start gap-4 p-3 bg-gray-50 rounded-lg">
-            <div className="p-2 bg-blue-100 text-blue-600 rounded-full">
+        {activities.map((activity) => (
+          <li
+            key={activity.id}
+            className={`flex items-start gap-4 p-3 rounded-lg ${
+              activity.status === "Selesai" ? "bg-green-50" : "bg-gray-50"
+            }`}
+          >
+            <div
+              className={`p-2 rounded-full ${
+                activity.status === "Selesai" ? "bg-green-100 text-green-600" : "bg-blue-100 text-blue-600"
+              }`}
+            >
               <Bell size={18} />
             </div>
             <div className="flex-1">

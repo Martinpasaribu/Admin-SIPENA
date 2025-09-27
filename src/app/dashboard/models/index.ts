@@ -25,6 +25,7 @@ export interface Dashboard {
   itemFacility: FacilityItems []                     
   reportDivision: DivisionCharts []                     
   pendingReports: ReportPriority []                     
+  latestReports: any []                     
 
 }
 
