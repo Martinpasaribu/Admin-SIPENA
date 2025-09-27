@@ -3,11 +3,12 @@
 
 import { useEffect, useState } from "react";
 import BaseModal from "./BaseModal";
-import { GetAdmin, UpdateRoleAdmin } from "../service/service_list_admin";
+import { DeleteAdmin, GetAdmin, UpdateRoleAdmin } from "../service/service_list_admin";
 import { useToast } from "@/components/ToastContect";
 import { StatusAdmin } from "../constant";
 import { Settings } from "lucide-react";
 import UpdateRoleModal from "./UpdateRoleModal";
+import ConfirmDeleteModal from "@/components/ConfirmDeletedModal";
 
 interface AdminListModalProps {
   isOpen: boolean;
@@ -39,6 +40,16 @@ export default function AdminListModal({ isOpen, superAdmin, onClose }: AdminLis
     } catch (err) {
       console.error("Error updating role:", err);
       showToast("error", "Gagal memperbarui role admin");
+    }
+  }
+  const handleDeleteAdmin = async (_id: string) => {
+    try {
+      await DeleteAdmin(_id);
+      showToast("success", "Role berhasil Hapus Admin");
+      refetchAdmin();
+    } catch (err) {
+      console.error("Error updating role:", err);
+      showToast("error", "Gagal hapus admin");
     }
   };
 
@@ -93,8 +104,11 @@ export default function AdminListModal({ isOpen, superAdmin, onClose }: AdminLis
           onClose={() => setSelectedAdmin(null)}
           admin={selectedAdmin}
           onUpdate={handleUpdateRole}
+          onDelete={handleDeleteAdmin}
         />
       )}
+
+
     </>
   );
 }

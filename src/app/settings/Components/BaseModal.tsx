@@ -7,6 +7,8 @@ interface BaseModalProps {
   isOpen: boolean;
 }
 
+
+
 export default function BaseModal({ title, children, onClose, isOpen }: BaseModalProps) {
   return (
     <div

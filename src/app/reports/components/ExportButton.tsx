@@ -1,4 +1,3 @@
-// src/app/reports/components/ExportButtons.tsx
 "use client";
 
 import React from "react";
@@ -7,6 +6,7 @@ import { saveAs } from "file-saver";
 import { Report } from "../models";
 import { FormatDate } from "../utils/Date";
 import { useToast } from "@/components/ToastContect";
+import { Progress, StatusBroken, TypeBroken } from "../constant";
 
 interface ExportButtonsProps {
   data: Report[];
@@ -26,9 +26,9 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ data }) => {
         "No Laporan": r.report_code,
         "Pelapor": r.employee_key?.username || "-",
         "Divisi": r.division_key?.code || "-",
-        "Tipe Report": r.report_type,
-        "Kerusakan": r.broken_type,
-        "Progress": r.progress,
+        "Tipe Report": TypeBroken(r.report_type)?.label || r.report_type,
+        "Kerusakan": StatusBroken(r.broken_type)?.label || r.broken_type,
+        "Progress": Progress(r.progress)?.label || r.progress,
         "Laporan Masuk": FormatDate(r.createdAt, "/"),
         "Lama Pengerjaan": r.duration?.text || "-",
       }))
@@ -55,9 +55,9 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ data }) => {
         "No Laporan": r.report_code,
         "Pelapor": r.employee_key?.username || "-",
         "Divisi": r.division_key?.code || "-",
-        "Tipe Report": r.report_type,
-        "Kerusakan": r.broken_type,
-        "Progress": r.progress,
+        "Tipe Report": TypeBroken(r.report_type)?.label || r.report_type,
+        "Kerusakan": StatusBroken(r.broken_type)?.label || r.broken_type,
+        "Progress": Progress(r.progress)?.label || r.progress,
         "Laporan Masuk": FormatDate(r.createdAt, "/"),
         "Lama Pengerjaan": r.duration?.text || "-",
       }))
@@ -70,20 +70,19 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ data }) => {
 
   return (
     <div className="flex gap-2">
-    <button
+      <button
         onClick={exportToExcel}
         className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition-colors shadow-sm"
-    >
+      >
         Export Excel
-    </button>
-    <button
+      </button>
+      <button
         onClick={exportToCSV}
         className="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition-colors shadow-sm"
-    >
+      >
         Export CSV
-    </button>
+      </button>
     </div>
-
   );
 };
 

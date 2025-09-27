@@ -3,12 +3,14 @@
 
 import BaseModal from "./BaseModal";
 import { useState, useEffect } from "react";
+import ConfirmDeleteModal from "@/components/ConfirmDeletedModal";
 
 interface UpdateRoleModalProps {
   isOpen: boolean;
   onClose: () => void;
   admin: any | null;
   onUpdate: (id: string, role: string) => Promise<void>;
+  onDelete: (id: string) => Promise<void>; 
 }
 
 export default function UpdateRoleModal({
@@ -16,8 +18,11 @@ export default function UpdateRoleModal({
   onClose,
   admin,
   onUpdate,
+  onDelete
 }: UpdateRoleModalProps) {
+
   const [role, setRole] = useState(admin?.role || "");
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     if (admin) {
@@ -31,6 +36,13 @@ export default function UpdateRoleModal({
     onClose();
   };
 
+  const handleConfirmDelete = async () => {
+    if (!deleteId) return;
+    await onDelete(deleteId);
+    setDeleteId(null);
+    onClose();
+  };
+
   return (
     <BaseModal title="Update Role Admin" isOpen={isOpen} onClose={onClose}>
       {admin && (
@@ -39,6 +51,7 @@ export default function UpdateRoleModal({
             Update role untuk:{" "}
             <span className="font-semibold text-blue-600">{admin.username}</span>
           </p>
+
           <select
             value={role}
             onChange={(e) => setRole(e.target.value)}
@@ -57,13 +70,29 @@ export default function UpdateRoleModal({
             >
               Batal
             </button>
+
             <button
               onClick={handleSubmit}
               className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm hover:bg-blue-700"
             >
               Update
             </button>
+
+            <button
+              onClick={() => setDeleteId(admin._id)}
+              className="px-4 py-2 rounded-lg bg-red-600 text-white text-sm hover:bg-red-700"
+            >
+              Hapus
+            </button>
           </div>
+
+          {/* 🔹 Modal Konfirmasi Hapus */}
+          <ConfirmDeleteModal
+            isOpen={!!deleteId}
+            onConfirm={handleConfirmDelete}
+            onCancel={() => setDeleteId(null)}
+            message="Yakin ingin menghapus admin ini?"
+          />
         </div>
       )}
     </BaseModal>

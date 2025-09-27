@@ -94,7 +94,7 @@ export default function ReportFiltersComponent({
           <option value="P">Proses</option>
           <option value="S">Selesai</option>
           <option value="T">Tolak</option>
-          <option value="RU">Review Update</option>
+          <option value="RU">Review Ulang</option>
         </select>
       </div>
 

@@ -45,3 +45,17 @@ export async function UpdateRoleAdmin(_id: string, role: any) {
     throw new Error(message);
   }
 }
+
+export async function DeleteAdmin(_id: string) {
+  try {
+    const res = await http.delete(`/admin/${_id}`);
+    return res.data;
+    
+  } catch (error: any) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Gagal deleted admin";
+    throw new Error(message);
+  }
+}
