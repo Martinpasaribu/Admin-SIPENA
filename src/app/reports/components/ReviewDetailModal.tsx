@@ -40,17 +40,16 @@ const ReviewDetailModal: React.FC<ReviewDetailModalProps> = ({ show, onClose, re
         className="bg-white rounded-2xl shadow-2xl p-5 sm:p-8 w-full max-w-lg m-0 sm:m-4 transform transition-all duration-300 scale-100"
       >
         {/* HEADER MODAL */}
-        <div className="flex justify-between items-start border-b border-gray-100 pb-3 sm:pb-4 mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-2xl font-extrabold text-slate-800 flex items-center">
+        <div className="flex justify-between items-center border-b border-gray-100 pb-3 sm:pb-4 mb-4 sm:mb-6">
+          <h2 className="text-sm sm:text-xl font-extrabold text-slate-800 flex items-center">
             {/* Ukuran ikon lebih kecil di HP (size={20}) */}
-            <MessageSquare size={20} className="mr-2 text-green-600 sm:size-26" />
             Detail Ulasan Layanan
           </h2>
           <button 
             onClick={onClose} 
             className="text-gray-400 p-1 sm:p-2 rounded-full hover:bg-gray-100 hover:text-gray-700 transition"
           >
-            <X size={20} className="sm:size-24" />
+            <X size={20} className="size-6 sm:size-10" />
           </button>
         </div>
 
@@ -74,7 +73,7 @@ const ReviewDetailModal: React.FC<ReviewDetailModalProps> = ({ show, onClose, re
             </div>
             
             {/* Label Status Bintang */}
-            <span className={`block text-lg sm:text-2xl font-extrabold mt-3 sm:mt-4 ${ratingStatus.color} transition-colors duration-300`}>
+            <span className={`block text-md sm:text-xl font-extrabold mt-3 sm:mt-4 ${ratingStatus.color} transition-colors duration-300`}>
               {ratingStatus.label}
             </span>
           </div>
@@ -96,7 +95,7 @@ const ReviewDetailModal: React.FC<ReviewDetailModalProps> = ({ show, onClose, re
           <button
             onClick={onClose}
             // Ukuran tombol disesuaikan untuk HP
-            className="px-6 py-2 text-white font-semibold bg-green-600 rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-500/50 active:scale-[0.98]"
+            className="px-6 py-2 text-white font-semibold bg-green-600 rounded-xl hover:bg-green-700 transition  active:scale-[0.98]"
           >
             Tutup
           </button>
