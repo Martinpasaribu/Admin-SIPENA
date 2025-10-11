@@ -103,8 +103,8 @@ export default function EmployeePage() {
                     <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Email</th>
                     <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Phone</th>
                     <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Division</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Status</th>
-                    <th className="px-6 py-3 text-left text-xs font-semibold uppercase">Aksi</th>
+                    <th className="px-6 py-3 text-center text-xs font-semibold uppercase">Status</th>
+                    <th className="px-6 py-3 text-center text-xs font-semibold uppercase">Aksi</th>
                   </tr>
                 </thead>
 
@@ -156,18 +156,51 @@ export default function EmployeePage() {
                       </td>
 
                       {/* Status */}
-                      <td className="px-6 py-4">
-                        <select
-                          value={c.status}
-                          onChange={(e) =>
-                            handleUpdateStatus(c._id, e.target.value as EmployeeClient["status"])
-                          }
-                          className={`border rounded p-1 text-sm ${StatusBooking(c.status).className}`}
-                        >
-                          <option value="A">Aktif</option>
-                          <option value="B">Blokir</option>
-                          <option value="P">Pending</option>
-                        </select>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        {/* Wrapper untuk membuat dropdown terlihat seperti badge dan memposisikan ikon */}
+                        <div className="inline-block relative">
+                          <select
+                            value={c.status}
+                            onChange={(e) =>
+                              handleUpdateStatus(c._id, e.target.value as EmployeeClient["status"])
+                            }
+                            // Gabungkan kelas dinamis dari StatusBooking dengan styling "pill"
+                            className={`
+                              appearance-none 
+                              pl-3 pr-8 py-1.5 
+                              rounded-full 
+                              text-sm font-semibold 
+                              cursor-pointer 
+                              shadow-sm
+                              transition-colors duration-200 
+                              focus:ring-2 focus:ring-opacity-50 focus:ring-current
+                              ${StatusBooking(c.status).className} 
+                            `}
+                          >
+                            <option value="A">Aktif</option>
+                            <option value="B">Blokir</option>
+                            <option value="P">Pending</option>
+                          </select>
+                          
+                          {/* Ikon panah kustom yang menggantikan panah native (Konsistensi lintas-browser) */}
+                          <svg
+                            className={`
+                              pointer-events-none 
+                              absolute inset-y-0 right-0 
+                              w-4 h-full mr-2
+                              text-gray-600 
+                            `}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M5.23 7.21a.75.75 0 011.06.02L10 10.99l3.71-3.76a.75.75 0 111.06 1.06l-4.25 4.34a.75.75 0 01-1.07 0L5.23 8.27a.75.75 0 010-1.06z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
                       </td>
 
                       {/* Aksi */}

@@ -21,21 +21,36 @@ export default function ReportFiltersComponent({
   setShowDateModal,
 }: Props) {
   return (
-    <div className="bg-white p-4 rounded-lg shadow mb-6 flex flex-wrap gap-4 justify-between">
-      {/* Bagian Input & Select */}
-      <div className="flex flex-wrap gap-4 items-center">
+    <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 mb-6">
+      {/* ================= Header (Mobile Responsive Title) ================= */}
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="text-base sm:text-lg font-semibold text-gray-700">
+          Filter Laporan
+        </h2>
+        <button
+          onClick={() => setShowDateModal(true)}
+          className="bg-green-700 text-white px-3 sm:px-4 py-2 rounded-lg text-sm hover:bg-green-800 transition-colors"
+        >
+          Filter Tanggal
+        </button>
+      </div>
+
+      {/* ================= Input & Dropdown Filters ================= */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
+        {/* Cari No Report */}
         <input
           type="text"
-          placeholder="Cari No Report"
-          className="border rounded-lg p-2 text-sm"
+          placeholder="No Report"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none"
           value={filters.searchTerm}
           onChange={(e) =>
             setFilters({ ...filters, searchTerm: e.target.value })
           }
         />
 
+        {/* Tipe Report */}
         <select
-          className="border rounded-lg p-2 text-sm"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none"
           value={filters.report_type}
           onChange={(e) =>
             setFilters({ ...filters, report_type: e.target.value })
@@ -43,13 +58,14 @@ export default function ReportFiltersComponent({
         >
           <option value="">Semua Tipe Report</option>
           <option value="BK">Bangunan Kantor</option>
-          <option value="BL">Bangunan Lainya</option>
+          <option value="BL">Bangunan Lainnya</option>
           <option value="K">Komplain</option>
           <option value="M">Mesin</option>
         </select>
 
+        {/* Divisi */}
         <select
-          className="border rounded-lg p-2 text-sm"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none"
           value={filters.division_key}
           onChange={(e) =>
             setFilters({ ...filters, division_key: e.target.value })
@@ -63,14 +79,14 @@ export default function ReportFiltersComponent({
               disabled={!r.status}
               className={!r.status ? "text-gray-400" : ""}
             >
-              {/* {r.code} {r.name} {!r.status && "( Non Aktif )"} */}
-              {r.code}{!r.status && "( Non Aktif )"}
+              {r.code} {!r.status && "(Non Aktif)"}
             </option>
           ))}
         </select>
 
+        {/* Kategori Kerusakan */}
         <select
-          className="border rounded-lg p-2 text-sm"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none"
           value={filters.broken_type}
           onChange={(e) =>
             setFilters({ ...filters, broken_type: e.target.value })
@@ -82,8 +98,9 @@ export default function ReportFiltersComponent({
           <option value="B">Berat</option>
         </select>
 
+        {/* Progress */}
         <select
-          className="border rounded-lg p-2 text-sm"
+          className="border border-gray-300 rounded-lg px-3 py-2 text-sm w-full focus:ring-2 focus:ring-green-600 focus:border-green-600 outline-none"
           value={filters.progress}
           onChange={(e) =>
             setFilters({ ...filters, progress: e.target.value })
@@ -98,11 +115,11 @@ export default function ReportFiltersComponent({
         </select>
       </div>
 
-      {/* Bagian Filter Tanggal */}
-      <div className="flex flex-wrap gap-2">
+      {/* ================= Filter Tanggal ================= */}
+      <div className="mt-4 flex flex-wrap gap-2 items-center justify-between">
         {filters.startDate && filters.endDate && (
-          <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg text-sm">
-            <span>
+          <div className="flex items-center gap-2 bg-gray-100 px-3 py-2 rounded-lg text-xs sm:text-sm">
+            <span className="text-gray-700">
               {formatDate(filters.startDate)} - {formatDate(filters.endDate)}
             </span>
             <button
@@ -110,16 +127,10 @@ export default function ReportFiltersComponent({
               className="text-red-500 hover:text-red-700 font-bold"
               aria-label="Hapus filter tanggal"
             >
-              &times;
+              ×
             </button>
           </div>
         )}
-        <button
-          onClick={() => setShowDateModal(true)}
-          className="bg-green-700 text-white px-4 py-2 rounded-lg text-sm hover:bg-green-800 transition-colors"
-        >
-          Filter Tanggal
-        </button>
       </div>
     </div>
   );

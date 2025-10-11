@@ -8,6 +8,13 @@ export interface Room {
   username: string
 }
 
+export interface Review {
+    
+    stars:number;
+    message: string;
+    status: boolean;
+
+}
 
 export interface duration {
   days: number,
@@ -39,6 +46,7 @@ export interface Report {
   progress: "A" | "P" | "S" | "T" | "RU";
   progress_end: Date,
   repair: IRepair,
+  review: Review,
   duration: duration,
   complain_des: string;
   broken_des: string;

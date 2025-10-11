@@ -198,21 +198,54 @@ const ItemPage = () => {
                         />
                       </td>
 
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <select
-                          value={f.status}
-                          onChange={(e) =>
-                            handleUpdateStatus(
-                              f._id,
-                              e.target.value as ItemsModel["status"]
-                            )
-                          }
-                          className={`border rounded p-1 ${StatusItems(f.status).className}`}
-                        >
-                          <option value="A">Tersedia</option>
-                          <option value="R">Perbaikan</option>
-                          <option value="B">Rusak</option>
-                        </select>
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        {/* Wrapper untuk memposisikan ikon panah di sebelah kanan */}
+                        <div className="inline-block relative">
+                          <select
+                            value={f.status}
+                            onChange={(e) =>
+                              handleUpdateStatus(
+                                f._id,
+                                e.target.value as ItemsModel["status"]
+                              )
+                            }
+                            // Gabungkan kelas dinamis dengan styling "pill" yang elegan
+                            className={`
+                              appearance-none 
+                              pl-3 pr-8 py-1.5 
+                              rounded-full 
+                              text-sm font-semibold 
+                              cursor-pointer 
+                              shadow-sm
+                              transition-colors duration-200 
+                              focus:ring-2 focus:ring-opacity-50 focus:ring-current // Focus ring dinamis
+                              ${StatusItems(f.status).className} // Kelas status dinamis
+                            `}
+                          >
+                            <option value="A">Tersedia</option>
+                            <option value="R">Perbaikan</option>
+                            <option value="B">Rusak</option>
+                          </select>
+                          
+                          {/* Ikon panah kustom yang menggantikan panah native */}
+                          <svg
+                            className={`
+                              pointer-events-none 
+                              absolute inset-y-0 right-0 
+                              w-4 h-full mr-2
+                              text-gray-600 
+                            `}
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M5.23 7.21a.75.75 0 011.06.02L10 10.99l3.71-3.76a.75.75 0 111.06 1.06l-4.25 4.34a.75.75 0 01-1.07 0L5.23 8.27a.75.75 0 010-1.06z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </div>
                       </td>
 
                       {/* 🔹 Tombol aksi responsif */}

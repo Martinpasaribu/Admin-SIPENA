@@ -1,13 +1,20 @@
+// src/components/ReportCard.tsx (BAGIAN YANG DIMODIFIKASI)
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { IRepair, Report } from "../models";
 import { Progress, StatusBroken, TypeBroken } from "../constant";
-import { Trash2, Pencil, Wrench, Image, Settings } from "lucide-react";
-import { FormatDate } from "../utils/Date";
+import { Trash2, Pencil, Wrench, Image, Clock, CheckCircle, XCircle, Info, Star } from "lucide-react";
+import { FormatDateWithTime } from "../utils/Date";
 import RepairModal from "./RepairModal";
+// 🎯 Import modal baru
+import ReviewDetailModal, { ReportReview } from "./ReviewDetailModal"; 
 import { useState } from "react";
+import { div } from "framer-motion/client";
+
+// Hapus interface ReportReview di sini jika sudah didefinisikan di ReviewDetailModal.tsx
 
 interface Props {
   report: Report;
@@ -16,156 +23,252 @@ interface Props {
 }
 
 export default function ReportCard({ report, onEdit, onDelete }: Props) {
+  // ... state lainnya tetap sama
   const [repair, setRepair] = useState<IRepair>();
   const [showDescModal, setShowDescModal] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  
+  // State baru untuk Modal Detail Review
+  const [showReviewDetailModal, setShowReviewDetailModal] = useState(false);
+  const [reviewDetail, setReviewDetail] = useState<ReportReview | null>(null);
+
 
   const HandleRepairModal = (data: any) => {
     setRepair(data);
     setShowDescModal(true);
   };
 
+  // Handler untuk membuka modal detail review
+  const HandleReviewDetailModal = (review: ReportReview) => {
+    setReviewDetail(review);
+    setShowReviewDetailModal(true);
+  }
+
+  // ... (ProgressIcon function dan statusColorClass tetap sama)
+
+  const ProgressIcon = (progressStatus: string) => {
+    switch (progressStatus) {
+      case "A":
+        return <Clock size={14} className="mr-1" />;
+      case "P":
+        return <Wrench size={14} className="mr-1" />;
+      case "S":
+        return <CheckCircle size={14} className="mr-1" />;
+      case "T":
+        return <XCircle size={14} className="mr-1" />;
+      default:
+        return <Info size={14} className="mr-1" />;
+    }
+  };
+
+  const statusColorClass = Progress(report.progress).className.split(' ')[0].replace('text-', 'border-');
+
+  const hasReview = report.review && report.review.stars > 0;
+
   return (
-    <div className="relative group bg-white p-4 sm:p-5 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition">
-      {/* 🔹 Tombol edit & delete */}
-      <div
-        className="
-          absolute top-3 right-3 flex gap-2
-          opacity-100 xl:opacity-0 xl:group-hover:opacity-100
-          transition duration-300 ease-in-out
-        "
-      >
-        <button
-          onClick={() => onEdit(report)}
-          className="p-1.5 sm:p-2 text-gray-500 rounded-lg border shadow hover:text-gray-700 hover:bg-gray-100 transition"
-        >
-          <Pencil size={25} className="h-3 w-3 md:h-5 md:w-5"/>
-        </button>
-        <button
-          onClick={() => report._id && onDelete(report._id)}
-          className="p-1.5 sm:p-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 shadow transition"
-        >
-          <Trash2 size={25} className="h-3 w-3 md:h-5 md:w-5"/>
-        </button>
-      </div>
+    <div className={`relative group bg-white p-6 rounded-2xl shadow-lg border-l-4 border-green-600 ${statusColorClass} hover:shadow-xl transition-all duration-300`}>
+      
+      {/* ... HEADER, GRID INFORMASI, Tombol Aksi Tambahan, PESAN DAN BALASAN tetap sama ... */}
 
-      {/* 🔹 Info utama */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 mt-2">
-        {[
-          ["No Laporan", report.report_code],
-          ["Tipe Report", TypeBroken(report.report_type).label],
-          ["Pelapor", report.employee_key?.username || "-"],
-          ["Fasilitas", report.facility_key?.name || "-"],
-          ["Divisi", report.division_key?.code || "-"],
-          ["Tipe Kerusakan", StatusBroken(report.broken_type).label],
-          ["Status", Progress(report.progress).label],
-          ["Laporan Masuk", FormatDate(report.createdAt, "/")],
-          ["Lama Pengerjaan", report.duration?.text || "-"],
-        ].map(([label, value], idx) => (
-          <div key={idx} className="flex flex-col gap-1">
-            <p className="text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
-              {label}
-            </p>
-            <p
-              className={`text-sm sm:text-base font-semibold  ${
-                label === "Status"
-                  ? Progress(report.progress).className
-                  : "text-gray-900"
-              }`}
-            >
-              {value}
-            </p>
-          </div>
-        ))}
-
-        {/* Perbaikan */}
-        <div className="flex flex-col gap-1 items-start">
-          <p className="text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Perbaikan
-          </p>
+      {/* 🔹 HEADER: No. Laporan & Tombol Aksi */}
+      <div className="flex justify-between items-start pb-3 border-b border-gray-100 mb-4">
+        <h3 className="text-xl font-extrabold text-slate-800 leading-tight">
+          <span className="text-gray-600">{report.report_code}</span>
+        </h3>
+        
+        <div className="flex gap-2 transition-all">
           <button
-            onClick={() => HandleRepairModal(report.repair)}
-            className="mt-1 text-gray-600 hover:text-gray-800 transition"
+            onClick={() => onEdit(report)}
+            title="Edit Laporan"
+            className="p-2 text-gray-500 rounded-full hover:text-blue-600 hover:bg-blue-50 transition"
           >
-            <Wrench size={22} />
+            <Pencil size={18} />
+          </button>
+          <button
+            onClick={() => report._id && onDelete(report._id)}
+            title="Hapus Laporan"
+            className="p-2 text-white bg-gray-500 hover:bg-gray-600 rounded-full shadow-md transition"
+          >
+            <Trash2 size={18} />
           </button>
         </div>
+      </div>
 
-        {/* Gambar */}
-        <div className="flex flex-col gap-1 items-start">
-          <p className="text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Gambar
-          </p>
-          {report.image ? (
+
+      {/* 🔹 GRID INFORMASI UTAMA */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-4 gap-x-5">
+        
+        {/* ⚙️ Tipe Report */}
+        <InfoItem label="Tipe Report" value={TypeBroken(report.report_type).label} />
+
+        {/* ⚠️ Tipe Kerusakan */}
+        <InfoItem 
+            label="Tipe Kerusakan" 
+            value={StatusBroken(report.broken_type).label} 
+            // className={StatusBroken(report.broken_type).className}
+        />
+
+        {/* 🔄 Status */}
+        <InfoItem
+          label="Status"
+          value={
+
+            <div className="flex justify-start">
+              <span className={`${Progress(report.progress).className} flex items-center font-bold`}>
+                {ProgressIcon(report.progress)}
+                {Progress(report.progress).label}
+              </span>
+
+              </div>
+          }
+        />
+        
+        {/* 🌟 REVIEW (TETAP SAMA) */}
+        <InfoItem 
+            label="Review Pelapor" 
+            value={
+                hasReview && report.review
+                ? (
+                    <button 
+                        onClick={() => HandleReviewDetailModal(report.review!)}
+                        className="flex items-center text-sm font-bold text-yellow-700 bg-yellow-100 px-2 py-1 rounded-lg hover:bg-yellow-200 transition"
+                    >
+                        <Star size={14} className="mr-1 fill-current" /> 
+                        {report.review.stars}
+                    </button>
+                )
+                : (
+                    <span className="text-sm text-gray-400 font-medium italic">
+                        Belum Ada
+                    </span>
+                )
+            } 
+        />
+        {/* ------------------------------------------- */}
+
+        {/* 👤 Pelapor */}
+        <InfoItem label="Pelapor" value={report.employee_key?.username || "-"} />
+
+        {/* 🏢 Fasilitas */}
+        <InfoItem label="Fasilitas" value={report.facility_key?.name || "-"} />
+
+        {/* 🧩 Divisi */}
+        <InfoItem label="Divisi" value={report.division_key?.code || "-"} />
+
+        {/* 🕒 Laporan Masuk */}
+        <InfoItem label="Laporan Masuk" value={FormatDateWithTime(report.createdAt, "/")} />
+
+        {/* ⏳ Lama Pengerjaan */}
+        <InfoItem label="Lama Pengerjaan" value={report.duration?.text || "-"} />
+      </div>
+      
+      {/* ---------------------------------------------------- */}
+
+      {/* 🔹 Tombol Aksi Tambahan */}
+      <div className="mt-6 pt-4 border-t border-gray-100 flex flex-wrap gap-3">
+        {/* 🔧 Perbaikan */}
+        {report.repair && (
             <button
-              onClick={() => setPreviewImage(report.image)}
-              className="mt-1 text-gray-600 hover:text-gray-800 transition"
+              onClick={() => HandleRepairModal(report.repair)}
+              className="px-4 py-2 text-[12px] rounded-lg bg-green-50 text-green-700 hover:bg-green-100 shadow-sm transition font-semibold flex items-center"
             >
-              <Image size={22} />
+              <Wrench size={14} className="mr-2" /> Lihat Detail Perbaikan
             </button>
-          ) : (
-            <span className="text-xs text-gray-400 italic">Tidak ada</span>
-          )}
-        </div>
+        )}
 
-        {/* Aksi mobile */}
-        <div className="flex flex-col gap-1 items-start xl:hidden">
-          <p className="text-[11px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Aksi
-          </p>
+        {/* 🖼️ Gambar */}
+        {report.image ? (
           <button
-            onClick={() => HandleRepairModal(report.repair)}
-            className="mt-1 text-gray-600 hover:text-gray-800 transition"
+            onClick={() => setPreviewImage(report.image)}
+            className="px-4 py-2 text-[12px] rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 shadow-sm transition font-semibold flex items-center"
           >
-            <Settings size={22} />
+            <Image size={14} className="mr-2" /> Lihat Gambar
           </button>
-        </div>
+        ) : (
+          <span className="px-4 py-2 text-xs text-gray-400 italic">Gambar tidak tersedia</span>
+        )}
       </div>
 
-      {/* 🔹 Pesan Customer */}
-      <div className="mt-3 sm:mt-4">
-        <p className="text-gray-500 text-xs sm:text-sm mb-1">Pesan Customer</p>
-        <p className="text-gray-700 text-sm sm:text-base bg-gray-50 p-3 sm:p-4 rounded-lg">
-          {report.broken_des
-            ? report.broken_des
-            : report.complain_des || "Belum ada balasan"}
-        </p>
+      {/* 🔹 PESAN DAN BALASAN */}
+      <div className="space-y-4 mt-6">
+          {/* Pesan Customer */}
+          <TextBlock label="Pesan Pelapor (Deskripsi Kerusakan)" value={report.broken_des || report.complain_des || "Pelapor tidak memberikan deskripsi tambahan."} />
+
+          {/* Balasan Admin */}
+          <TextBlock label="Balasan/Catatan Admin" value={report.admin_note || "Admin belum memberikan balasan/catatan."} />
+          
       </div>
 
-      {/* 🔹 Balasan Admin */}
-      <div className="mt-3 sm:mt-4">
-        <p className="text-gray-500 text-xs sm:text-sm mb-1">Balasan Admin</p>
-        <p className="text-gray-700 text-sm sm:text-base bg-gray-50 p-3 sm:p-4 rounded-lg">
-          {report.admin_note || "Belum ada balasan"}
-        </p>
-      </div>
 
-      {/* 🔹 Preview Image Modal */}
+      {/* 🔹 Preview Image Modal (Tetap Sama) */}
       {previewImage && (
         <div
-          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50"
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={() => setPreviewImage(null)}
         >
           <img
             src={previewImage}
             alt="Preview"
-            className="max-w-[90%] max-h-[90%] rounded-lg shadow-2xl transition-transform duration-300 scale-100 hover:scale-105"
+            className="max-w-full max-h-full md:max-w-[90%] md:max-h-[90%] rounded-lg shadow-2xl transition-transform duration-300 scale-100 hover:scale-[1.01]"
           />
           <button
             onClick={() => setPreviewImage(null)}
-            className="absolute top-6 right-6 text-white bg-black/50 hover:bg-black/70 p-2 px-3 rounded-full transition"
+            className="absolute top-6 right-6 text-white bg-black/50 hover:bg-black/70 p-3 rounded-full transition text-lg font-bold"
           >
             ✕
           </button>
         </div>
       )}
 
-      {/* 🔹 Modal Perbaikan */}
+      {/* 🔹 Modal Perbaikan (Tetap Sama) */}
       <RepairModal
         show={showDescModal}
         repair={repair}
         onClose={() => setShowDescModal(false)}
       />
+      
+      {/* 🎯 Modal Detail Review BARU */}
+      <ReviewDetailModal
+        show={showReviewDetailModal}
+        review={reviewDetail}
+        onClose={() => setShowReviewDetailModal(false)}
+      />
+    </div>
+  );
+}
+
+// ... Komponen Reusable InfoItem dan TextBlock (Tetap Sama)
+
+function InfoItem({
+  label,
+  value,
+  className = 'text-gray-800',
+}: {
+  label: string;
+  value: React.ReactNode;
+  className?: string; 
+}) {
+  return (
+    <div className="flex flex-col gap-0.5">
+      <p className="text-[10px] sm:text-xs font-medium text-gray-500 uppercase tracking-wider">
+        {label}
+      </p>
+      <div className={`w-full font-semibold text-sm ${className}`}>
+        <h1 className="w-full">
+          {value}
+          </h1>
+        </div>
+    </div>
+  );
+}
+
+function TextBlock({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="text-sm">
+      <p className="text-gray-500 mb-1.5 font-bold uppercase tracking-wider text-[11px] sm:text-xs">{label}</p>
+      <div className="bg-gray-50 border border-gray-200 p-4 rounded-xl text-gray-700 leading-snug shadow-inner">
+        {value}
+      </div>
     </div>
   );
 }

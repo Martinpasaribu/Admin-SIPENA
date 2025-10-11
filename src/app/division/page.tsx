@@ -124,10 +124,10 @@ export default function DivisionPage() {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Kode
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
+                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider text-center">
+                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-600 uppercase tracking-wider">
                   Aksi
                 </th>
               </tr>
@@ -171,20 +171,55 @@ export default function DivisionPage() {
                     </td>
 
                     {/* Status */}
-                    <td className="px-4 py-3 whitespace-nowrap">
-                      <select
-                        value={String(f.status)}
-                        onChange={(e) => {
-                          const newStatus = e.target.value === "true";
-                          handleUpdateStatus(f._id, newStatus);
-                        }}
-                        className={`border rounded-md px-2 py-1 text-sm focus:outline-none ${StatusDivision(f.status).className}`}
-                      >
-                        <option value="true">Aktif</option>
-                        <option value="false">Non Aktif</option>
-                      </select>
+                    <td className="px-4 py-3 whitespace-nowrap text-center">
+                      {/* Wrapper untuk memposisikan ikon panah */}
+                      <div className="inline-block relative">
+                        <select
+                          // Memastikan nilai string di-handle, meskipun nilainya boolean di logika
+                          value={String(f.status)} 
+                          onChange={(e) => {
+                            // Konversi nilai string kembali ke boolean saat update
+                            const newStatus = e.target.value === "true"; 
+                            handleUpdateStatus(f._id, newStatus);
+                          }}
+                          // Gabungkan kelas dinamis dengan styling "pill"
+                          className={`
+                            appearance-none 
+                            pl-3 pr-8 py-1.5 
+                            rounded-full 
+                            text-sm font-semibold 
+                            cursor-pointer 
+                            shadow-sm
+                            transition-colors duration-200 
+                            focus:ring-2 focus:ring-opacity-50 focus:ring-current
+                            ${StatusDivision(f.status).className} 
+                          `}
+                        >
+                          <option value="true">Aktif</option>
+                          <option value="false">Non Aktif</option>
+                        </select>
+                        
+                        {/* Ikon panah kustom SVG untuk UX yang lebih baik */}
+                        <svg
+                          className={`
+                            pointer-events-none 
+                            absolute inset-y-0 right-0 
+                            w-4 h-full mr-2
+                            text-gray-600 
+                          `}
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 10.99l3.71-3.76a.75.75 0 111.06 1.06l-4.25 4.34a.75.75 0 01-1.07 0L5.23 8.27a.75.75 0 010-1.06z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
                     </td>
-
+                    
                     {/* Tombol Aksi */}
                     <td className="px-4 py-3 whitespace-nowrap text-center">
                       <div

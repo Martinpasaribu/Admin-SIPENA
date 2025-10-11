@@ -3,11 +3,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { IRepair, Report } from "../models";
+import { IRepair, Report, Review } from "../models";
 import { Progress, StatusBroken, TypeBroken } from "../constant";
-import { Image, PencilLine, Trash2, Wrench } from "lucide-react";
+import { CheckCircle, Clock, Image, Info, PencilLine, Star, Trash2, Wrench, XCircle } from "lucide-react";
 import { FormatDate } from "../utils/Date";
 import RepairModal from "./RepairModal";
+import ReviewDetailModal from "./ReviewDetailModal";
 
 interface ReportTableProps {
   reports: Report[];
@@ -15,15 +16,39 @@ interface ReportTableProps {
   onDelete: (id: string) => void;
 }
 
+
+
 const ReportTable: React.FC<ReportTableProps> = ({ reports, onEdit, onDelete }) => {
   const [repair, setRepair] = useState<IRepair>();
   const [showDescModal, setShowDescModal] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  
+  // State baru untuk Modal Detail Review
+  const [showReviewDetailModal, setShowReviewDetailModal] = useState(false);
+  const [reviewDetail, setReviewDetail] = useState<Review | null>(null);
+
 
   const HandleRepairModal = (data: any) => {
     setRepair(data);
     setShowDescModal(true);
   };
+
+  const HandleReviewDetailModal = (review: Review) => {
+    setReviewDetail(review);
+    setShowReviewDetailModal(true);
+  }
+
+  const ProgressIcon = (progressStatus: string) => {
+    switch (progressStatus) {
+      case 'A': return <Clock size={14} className="mr-1" />;
+      case 'P': return <Wrench size={14} className="mr-1" />;
+      case 'S': return <CheckCircle size={14} className="mr-1" />;
+      case 'T': return <XCircle size={14} className="mr-1" />;
+      case 'RU': return <Info size={14} className="mr-1" />;
+      default: return <Info size={14} className="mr-1" />;
+    }
+  }
+
 
   return (
     <div className="overflow-x-auto w-full p-2 sm:p-4 bg-white rounded-xl shadow-sm border border-gray-100">
@@ -36,6 +61,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onEdit, onDelete }) 
               "Fasilitas",
               "Divisi",
               "Tipe Report",
+              "Review",
               "Kerusakan",
               "Progress",
               "Laporan Masuk",
@@ -44,7 +70,7 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onEdit, onDelete }) 
               "Gambar",
               "Aksi",
             ].map((head, idx) => (
-              <th key={idx} className="px-3 py-2 sm:px-4 sm:py-3 text-left font-semibold">
+              <th key={idx} className="px-3 py-2 sm:px-4 sm:py-3 text-center font-semibold">
                 {head}
               </th>
             ))}
@@ -82,6 +108,27 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onEdit, onDelete }) 
                 {TypeBroken(report.report_type).label}
               </td>
 
+              {/* Review */}
+              <td className="px-3 py-2 sm:px-4 sm:py-3">
+{
+              report.review.stars > 0
+                ? (
+                    <button 
+                        onClick={() => HandleReviewDetailModal(report.review!)}
+                        className="flex items-center text-sm font-bold text-yellow-700 bg-yellow-100 px-2 py-1 rounded-lg hover:bg-yellow-200 transition"
+                    >
+                        <Star size={14} className="mr-1 fill-current" /> 
+                        {report.review.stars}
+                    </button>
+                )
+                : (
+                    <span className="text-sm text-gray-400 font-medium italic">
+                        -
+                    </span>
+                )
+            } 
+              </td>
+
               {/* Kerusakan */}
               <td className="px-3 py-2 sm:px-4 sm:py-3">
                 <span className="inline-block py-1 px-2 rounded-md bg-gray-100 text-gray-700 text-[11px] sm:text-xs font-semibold">
@@ -90,10 +137,11 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onEdit, onDelete }) 
               </td>
 
               {/* Progress */}
-              <td className="px-3 py-2 sm:px-4 sm:py-3">
+              <td className="">
                 <span
-                  className={`inline-block py-1 px-2 rounded-md text-[11px] sm:text-xs font-semibold ${Progress(report.progress).className}`}
+                  className={` w-full flex items-center px-3 py-1 rounded-full text-xs font-bold shadow-sm ${Progress(report.progress).className}`}
                 >
+                  {ProgressIcon(report.progress)}
                   {Progress(report.progress).label}
                 </span>
               </td>
@@ -110,13 +158,15 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onEdit, onDelete }) 
 
               {/* Perbaikan */}
               <td className="px-3 py-2 sm:px-4 sm:py-3 text-center">
-                <button
-                  onClick={() => HandleRepairModal(report.repair)}
-                  className="text-gray-500 hover:text-blue-500 transition"
-                >
-                  <Wrench size={20} />
-                </button>
+              <button
+                onClick={() => HandleRepairModal(report.repair)}
+                className="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 hover:text-gray-900 transition-colors duration-200 shadow-sm active:scale-95 text-sm font-medium"
+              >
+                Lihat Detail
+              </button>
               </td>
+
+              
 
               {/* Gambar */}
               <td className="px-3 py-2 sm:px-4 sm:py-3 text-center">
@@ -168,6 +218,13 @@ const ReportTable: React.FC<ReportTableProps> = ({ reports, onEdit, onDelete }) 
         show={showDescModal}
         repair={repair}
         onClose={() => setShowDescModal(false)}
+      />
+
+      {/* 🎯 Modal Detail Review BARU */}
+      <ReviewDetailModal
+        show={showReviewDetailModal}
+        review={reviewDetail}
+        onClose={() => setShowReviewDetailModal(false)}
       />
 
       {/* 🔹 Preview Gambar */}

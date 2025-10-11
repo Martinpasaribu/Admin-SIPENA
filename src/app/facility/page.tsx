@@ -6,7 +6,7 @@ import { useToast } from "@/components/ToastContect";
 import { DeletedFacility, GetFacility, UpdateStatusFacility } from "./services/service_facility";
 import EditFacilityModal from "./components/Update";
 import AddFacilityModal from "./components/Add";
-import { PencilLine, ScrollText, Trash2 } from "lucide-react";
+import { ArrowRight, Eye, PencilLine, ScrollText, Trash2 } from "lucide-react";
 import ConfirmDeleteModal from "@/components/ConfirmDeletedModal";
 import { CategoryFacility, StatusFacility, UnitFacility } from "./constant";
 import { Facility, FacilityClient } from "./models";
@@ -104,13 +104,13 @@ export default function FacilityPage() {
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Kode</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Nama</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Satuan</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Kategori</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Items</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Satuan</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Kategori</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Items</th>
                 <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Data Before</th>
                 <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Data After</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Desc</th>
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-center text-xs font-semibold uppercase tracking-wider">Status</th>
                 <th className="px-6 py-3 text-left text-xs font-semibold uppercase tracking-wider">Aksi</th>
               </tr>
             </thead>
@@ -142,27 +142,33 @@ export default function FacilityPage() {
                         {CategoryFacility(f.category).label}
                       </h1>
                     </td>
+
+
                     <td
                       onClick={() => GotoNavigate(f._id, f.name)}
-                      // Tambahkan kelas untuk efek hover pada cursor
-                      className="cursor-pointer px-6 py-4 whitespace-nowrap"
+                      className="cursor-pointer px-6 py-4 whitespace-nowrap text-center"
                     >
-                      <p
+                      <div
                         className="
-                          inline-block
-                          // Desain baru: Biru cerah (Aksen), Padding lebih nyaman
-                          bg-blue-500 text-white 
-                          px-3 py-1.5 rounded-lg text-sm font-semibold text-center 
-                          
-                          // Efek interaktif: Shadow dan Hover
-                          shadow-md 
-                          transition duration-300 ease-in-out
-                          hover:bg-blue-600 hover:shadow-lg
+                          inline-flex items-center gap-1.5
+                          text-green-600 font-semibold
+                          text-sm group
+                          transition-all duration-200
+                          hover:text-green-800
+                          active:text-green-900
                         "
                       >
-                        ITEM { f.qty }
-                      </p>
+                        {/* <Eye className="w-4 h-4 transition-all duration-200 group-hover:scale-110" /> */}
+                        <span className="
+                          tracking-tight border-b border-dashed border-green-300
+                          group-hover:border-solid group-hover:border-green-600
+                        ">
+                          Lihat Item ( {f.qty} )
+                        </span>
+                        <ArrowRight className="w-4 h-4 ml-1 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                      </div>
                     </td>
+
 
                     <td className="px-6 py-4 whitespace-nowrap">
                       <ul className="flex justify-around gap-2 w-[8rem]">
@@ -188,18 +194,46 @@ export default function FacilityPage() {
                       />
                     </td>
 
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <select
-                        value={String(f.status)}
-                        onChange={(e) =>
-                          handleUpdateStatus(f._id, e.target.value as FacilityClient["status"])
-                        }
-                        className={`border rounded p-1 ${StatusFacility(f.status).className}`}
-                      >
-                        <option value="A">Aktif</option>
-                        <option value="R">Sedang Diperbaiki</option>
-                        <option value="B">Rusak</option>
-                      </select>
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      {/* Menggunakan div wrapper untuk memastikan lebar dan posisi */}
+                      <div className="inline-block relative">
+                        <select
+                          value={String(f.status)}
+                          onChange={(e) =>
+                            handleUpdateStatus(f._id, e.target.value as FacilityClient["status"])
+                          }
+                          // Gabungkan kelas dinamis dari StatusFacility dengan styling elegan
+                          className={`
+                            appearance-none 
+                            pl-3 pr-8 py-1.5 
+                            rounded-full 
+                            text-sm font-semibold 
+                            cursor-pointer 
+                            transition-colors duration-200 
+                            shadow-sm
+                            focus:ring-2 focus:ring-opacity-50 
+                            ${StatusFacility(f.status).className}
+                          `}
+                        >
+                          <option value="A">Aktif</option>
+                          <option value="R">Sedang Diperbaiki</option>
+                          <option value="B">Rusak</option>
+                        </select>
+                        
+                        {/* Ikon panah kustom untuk menggantikan panah native yang kaku (UX) */}
+                        <svg
+                          className="pointer-events-none absolute inset-y-0 right-0 w-4 h-full mr-2"
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M5.23 7.21a.75.75 0 011.06.02L10 10.99l3.71-3.76a.75.75 0 111.06 1.06l-4.25 4.34a.75.75 0 01-1.07 0L5.23 8.27a.75.75 0 010-1.06z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
                     </td>
 
                     {/* 🔹 Tombol aksi responsif */}

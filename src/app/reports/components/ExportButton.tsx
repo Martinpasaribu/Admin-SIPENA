@@ -4,7 +4,7 @@ import React from "react";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
 import { Report } from "../models";
-import { FormatDate } from "../utils/Date";
+import { FormatDate, FormatDateWithTime } from "../utils/Date";
 import { useToast } from "@/components/ToastContect";
 import { Progress, StatusBroken, TypeBroken } from "../constant";
 
@@ -29,7 +29,7 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ data }) => {
         "Tipe Report": TypeBroken(r.report_type)?.label || r.report_type,
         "Kerusakan": StatusBroken(r.broken_type)?.label || r.broken_type,
         "Progress": Progress(r.progress)?.label || r.progress,
-        "Laporan Masuk": FormatDate(r.createdAt, "/"),
+        "Laporan Masuk": FormatDateWithTime(r.createdAt, "/"),
         "Lama Pengerjaan": r.duration?.text || "-",
       }))
     );
@@ -58,7 +58,7 @@ const ExportButtons: React.FC<ExportButtonsProps> = ({ data }) => {
         "Tipe Report": TypeBroken(r.report_type)?.label || r.report_type,
         "Kerusakan": StatusBroken(r.broken_type)?.label || r.broken_type,
         "Progress": Progress(r.progress)?.label || r.progress,
-        "Laporan Masuk": FormatDate(r.createdAt, "/"),
+        "Laporan Masuk": FormatDateWithTime(r.createdAt, "/"),
         "Lama Pengerjaan": r.duration?.text || "-",
       }))
     );
